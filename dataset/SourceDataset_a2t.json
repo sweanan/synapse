@@ -1,0 +1,19 @@
+{
+	"name": "SourceDataset_a2t",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pcap",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "rpl-dio-mc-nsa-optional-tlv-dissector-sample.pcap.gz",
+				"container": "pcap"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

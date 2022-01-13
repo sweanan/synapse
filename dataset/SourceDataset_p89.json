@@ -1,0 +1,23 @@
+{
+	"name": "SourceDataset_p89",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "TaxiStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ipv4frags.pcap",
+				"container": "taxisource"
+			},
+			"compression": {
+				"type": "GZip",
+				"level": "Optimal"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

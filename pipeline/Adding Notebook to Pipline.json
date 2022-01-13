@@ -1,0 +1,39 @@
+{
+	"name": "Adding Notebook to Pipline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Exploration Notebook",
+				"type": "SynapseNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebook": {
+						"referenceName": "Exploration Notebook",
+						"type": "NotebookReference"
+					},
+					"parameters": {
+						"runId": {
+							"value": {
+								"value": "@pipeline().RunId",
+								"type": "Expression"
+							},
+							"type": "string"
+						}
+					},
+					"snapshot": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-01-09T16:06:13Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

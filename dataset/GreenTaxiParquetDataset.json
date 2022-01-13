@@ -1,0 +1,21 @@
+{
+	"name": "GreenTaxiParquetDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "swetha-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "Facts/GreenTaxis.parque",
+				"fileSystem": "taxioutput"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

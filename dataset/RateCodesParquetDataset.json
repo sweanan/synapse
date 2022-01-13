@@ -1,0 +1,22 @@
+{
+	"name": "RateCodesParquetDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "swetha-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "RateCodes.parquet",
+				"folderPath": "Dimensions",
+				"fileSystem": "taxioutput"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

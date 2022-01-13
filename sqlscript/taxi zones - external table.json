@@ -1,0 +1,17 @@
+{
+	"name": "taxi zones - external table",
+	"properties": {
+		"content": {
+			"query": "-- Create master key\n-- DROP MASTER KEY;\n-- GO\n\nCREATE MASTER KEY;\nGO\n\n\n-- Create credential to access Data Lake\nCREATE DATABASE SCOPED CREDENTIAL SA4DataLakeCredential\nWITH \n\tIDENTITY = 'user', \n\tSecret = 'xhsez5R6b49o4hrol/yG2fDa8V1OCHdHo/6QJ0wa5qM5l3Zic3CLhg+LrvfmtdJehO0bw+2BFz3Cvt8wEoNaEg==';\nGO\n\n-- Create external data source, pointing to Data Lake\nCREATE EXTERNAL DATA SOURCE SA4DataLake\nwith (  \n      TYPE = HADOOP,\n      LOCATION ='abfss://taxidata@swethataxidatalake.dfs.core.windows.net',  \n      CREDENTIAL = SA4DataLakeCredential  \n);  \nGO\n\n-- Create external file format\nCREATE EXTERNAL FILE FORMAT CSVFileFormat4\nWITH \n(   FORMAT_TYPE = DELIMITEDTEXT\n,   FORMAT_OPTIONS  \n\t(   \n\t\tFIELD_TERMINATOR   = ','\n\t\t, STRING_DELIMITER = '\"'\n        , DATE_FORMAT      = 'yyyy-MM-dd HH:mm:ss'\n        , USE_TYPE_DEFAULT = FALSE\n        , FIRST_ROW  = 2\n    )\n);\nGO\n\n-- Create schema for external resources\nCREATE SCHEMA ext4\nGO\n\n--Recreate it if already present\nDROP EXTERNAL TABLE ext4.TaxiZones\n\n-- Create external table for Taxi Zones\nCREATE EXTERNAL TABLE ext4.TaxiZones\n(\n\tLocationId INT,\n\tBorough NVARCHAR(100),\n\tZone NVARCHAR(100),\n    ServiceZone NVARCHAR(100)\n)\nWITH\n(\n    DATA_SOURCE = SA4DataLake\n  , FILE_FORMAT = CSVFileFormat4\n  , LOCATION='/TaxiZones/TaxiZones1.csv'  \n)\nGO\n\nSELECT * FROM ext4.TaxiZones\nGO\n\n-- -- Drop external table\n-- DROP EXTERNAL TABLE ext3.TaxiZones\n\n-- -- Recreate external table\n-- CREATE EXTERNAL TABLE ext3.TaxiZones\n-- (\n-- \tLocationId INT,\n-- \tBorough NVARCHAR(100),\n-- \tZone NVARCHAR(100),\n--     ServiceZone NVARCHAR(100)\n-- )\n-- WITH\n-- (\n--     DATA_SOURCE = SA3DataLake\n--   , FILE_FORMAT = CSVFileFormat3\n--   , LOCATION='/TaxiZones/'    \n--   , REJECT_TYPE = VALUE\n--   , REJECT_VALUE = 1\n--   , REJECTED_ROW_LOCATION='/Errors/TaxiZones'\n-- )\n-- GO\n\n-- SELECT * FROM ext3.TaxiZones",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "TaxiWarehouse",
+				"poolName": "TaxiWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

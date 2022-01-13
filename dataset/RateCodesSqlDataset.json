@@ -1,0 +1,31 @@
+{
+	"name": "RateCodesSqlDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SwethaTaxisLS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "RateCodeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "RateCode",
+				"type": "varchar"
+			},
+			{
+				"name": "IsApproved",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "RateCodes"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

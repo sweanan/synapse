@@ -1,0 +1,17 @@
+{
+	"name": "Distribution types",
+	"properties": {
+		"content": {
+			"query": "-- create RoundRobin table for TaxiZonesCopy\nCREATE TABLE Taxi_RoundRobin\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT *\nFROM TaxiZonesCopy\n\n-- Check the distribution data\nDBCC PDW_SHOWSPACEUSED('Taxi_RoundRobin')\n\n\n-- create Hash Distributions table for TaxiZonesCopy\nCREATE TABLE Taxi_Hash\nWITH\n(\n    DISTRIBUTION = HASH(LocationID)\n)\nAS\nSELECT *\nFROM TaxiZonesCopy\n\n-- Check the distribution data\nDBCC PDW_SHOWSPACEUSED('Taxi_Hash')\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "TaxiWarehouse",
+				"poolName": "TaxiWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

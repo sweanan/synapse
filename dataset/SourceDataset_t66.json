@@ -1,0 +1,23 @@
+{
+	"name": "SourceDataset_t66",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pcap",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ipv4frags.pcap",
+				"container": "pcap"
+			},
+			"compression": {
+				"type": "GZip",
+				"level": "Optimal"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

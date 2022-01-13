@@ -1,0 +1,19 @@
+{
+	"name": "SourceDataset_r51",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pcap",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ipv4frags.pcap",
+				"container": "pcap"
+			}
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
