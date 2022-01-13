@@ -1,0 +1,37 @@
+{
+	"name": "bashProcess",
+	"properties": {
+		"activities": [
+			{
+				"name": "bashProcess",
+				"type": "Custom",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"command": "bash test.sh",
+					"resourceLinkedService": {
+						"referenceName": "pcap",
+						"type": "LinkedServiceReference"
+					},
+					"folderPath": "pcap/yumaTestPcapfiles",
+					"referenceObjects": {
+						"linkedServices": [],
+						"datasets": []
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureBatch1",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
