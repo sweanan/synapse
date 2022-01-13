@@ -20,6 +20,9 @@
 		"swetha-synapse-WorkspaceDefaultSqlServer_connectionString": {
 			"value": ""
 		},
+		"AzureBatch1_accessKey": {
+			"value": ""
+		},
 		"nyc_tlc_yellow_sasUri": {
 			"value": ""
 		},
@@ -31,6 +34,15 @@
 		},
 		"us-decennial-census-zip_sasUri": {
 			"value": ""
+		},
+		"AzureBatch1_properties_typeProperties_batchUri": {
+			"value": "https://azurebatch.eastus.batch.azure.com"
+		},
+		"AzureBatch1_properties_typeProperties_poolName": {
+			"value": "mypool"
+		},
+		"AzureBatch1_properties_typeProperties_accountName": {
+			"value": "azurebatch"
 		}
 	}
 }

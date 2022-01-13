@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'swetha-synapse-WorkspaceDefaultSqlServer'"
 		},
+		"AzureBatch1_accessKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessKey' of 'AzureBatch1'"
+		},
 		"nyc_tlc_yellow_sasUri": {
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'nyc_tlc_yellow'"
@@ -42,6 +46,18 @@
 		"us-decennial-census-zip_sasUri": {
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'us-decennial-census-zip'"
+		},
+		"AzureBatch1_properties_typeProperties_batchUri": {
+			"type": "string",
+			"defaultValue": "https://azurebatch.eastus.batch.azure.com"
+		},
+		"AzureBatch1_properties_typeProperties_poolName": {
+			"type": "string",
+			"defaultValue": "mypool"
+		},
+		"AzureBatch1_properties_typeProperties_accountName": {
+			"type": "string",
+			"defaultValue": "azurebatch"
 		}
 	},
 	"variables": {
@@ -1073,7 +1089,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "b2187a32-d31e-4221-9157-60712ca80dd9"
+						"spark.autotune.trackingId": "7ac240e0-4f01-4402-a7a2-4d6223308a10"
 					}
 				},
 				"metadata": {
@@ -1625,7 +1641,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "5bbe0250-47ad-4807-bcbc-69d638bc60bc"
+						"spark.autotune.trackingId": "046ef725-b189-440d-822a-d2962a581f12"
 					}
 				},
 				"metadata": {
@@ -1771,1656 +1787,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "469a86b1-e6b2-4f24-8187-72b5c787d98e"
+						"spark.autotune.trackingId": "b3df5b02-7335-4fe1-a216-eaf2add724a1"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1",
-						"state": {
-							"d9d31107-0554-4d5b-8151-d0d9d9fea7ec": {
-								"type": "Synapse.DataFrame",
-								"sync_state": {
-									"table": {
-										"rows": [
-											{
-												"0": "4",
-												"1": "Manhattan",
-												"2": "Alphabet City",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "11",
-												"1": "Brooklyn",
-												"2": "Bath Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "18",
-												"1": "Bronx",
-												"2": "Bedford Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "25",
-												"1": "Brooklyn",
-												"2": "Boerum Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "32",
-												"1": "Bronx",
-												"2": "Bronxdale",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "39",
-												"1": "Brooklyn",
-												"2": "Canarsie",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "46",
-												"1": "Bronx",
-												"2": "City Island",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "53",
-												"1": "Queens",
-												"2": "College Point",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "60",
-												"1": "Bronx",
-												"2": "Crotona Park East",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "67",
-												"1": "Brooklyn",
-												"2": "Dyker Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "74",
-												"1": "Manhattan",
-												"2": "East Harlem North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "81",
-												"1": "Bronx",
-												"2": "Eastchester",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "88",
-												"1": "Manhattan",
-												"2": "Financial District South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "95",
-												"1": "Queens",
-												"2": "Forest Hills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "102",
-												"1": "Queens",
-												"2": "Glendale",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "109",
-												"1": "Staten Island",
-												"2": "Great Kills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "116",
-												"1": "Manhattan",
-												"2": "Hamilton Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "123",
-												"1": "Brooklyn",
-												"2": "Homecrest",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "130",
-												"1": "Queens",
-												"2": "Jamaica",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "137",
-												"1": "Manhattan",
-												"2": "Kips Bay",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "144",
-												"1": "Manhattan",
-												"2": "Little Italy/NoLiTa",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "8",
-												"1": "Queens",
-												"2": "Astoria Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "151",
-												"1": "Manhattan",
-												"2": "Manhattan Valley",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "15",
-												"1": "Queens",
-												"2": "Bay Terrace/Fort Totten",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "158",
-												"1": "Manhattan",
-												"2": "Meatpacking/West Village West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "22",
-												"1": "Brooklyn",
-												"2": "Bensonhurst West",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "165",
-												"1": "Brooklyn",
-												"2": "Midwood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "29",
-												"1": "Brooklyn",
-												"2": "Brighton Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "172",
-												"1": "Staten Island",
-												"2": "New Dorp/Midland Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "36",
-												"1": "Brooklyn",
-												"2": "Bushwick North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "179",
-												"1": "Queens",
-												"2": "Old Astoria",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "43",
-												"1": "Manhattan",
-												"2": "Central Park",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "186",
-												"1": "Manhattan",
-												"2": "Penn Station/Madison Sq West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "50",
-												"1": "Manhattan",
-												"2": "Clinton West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "193",
-												"1": "Queens",
-												"2": "Queensbridge/Ravenswood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "57",
-												"1": "Queens",
-												"2": "Corona",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "200",
-												"1": "Bronx",
-												"2": "Riverdale/North Riverdale/Fieldston",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "64",
-												"1": "Queens",
-												"2": "Douglaston",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "207",
-												"1": "Queens",
-												"2": "Saint Michaels Cemetery/Woodside",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "71",
-												"1": "Brooklyn",
-												"2": "East Flatbush/Farragut",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "214",
-												"1": "Staten Island",
-												"2": "South Beach/Dongan Hills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "78",
-												"1": "Bronx",
-												"2": "East Tremont",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "221",
-												"1": "Staten Island",
-												"2": "Stapleton",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "85",
-												"1": "Brooklyn",
-												"2": "Erasmus",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "228",
-												"1": "Brooklyn",
-												"2": "Sunset Park West",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "92",
-												"1": "Queens",
-												"2": "Flushing",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "235",
-												"1": "Bronx",
-												"2": "University Heights/Morris Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "99",
-												"1": "Staten Island",
-												"2": "Freshkills Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "242",
-												"1": "Bronx",
-												"2": "Van Nest/Morris Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "106",
-												"1": "Brooklyn",
-												"2": "Gowanus",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "249",
-												"1": "Manhattan",
-												"2": "West Village",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "113",
-												"1": "Manhattan",
-												"2": "Greenwich Village North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "256",
-												"1": "Brooklyn",
-												"2": "Williamsburg (South Side)",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "120",
-												"1": "Manhattan",
-												"2": "Highbridge Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "263",
-												"1": "Manhattan",
-												"2": "Yorkville West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "127",
-												"1": "Manhattan",
-												"2": "Inwood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "134",
-												"1": "Queens",
-												"2": "Kew Gardens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "141",
-												"1": "Manhattan",
-												"2": "Lenox Hill West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "148",
-												"1": "Manhattan",
-												"2": "Lower East Side",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "155",
-												"1": "Brooklyn",
-												"2": "Marine Park/Mill Basin",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "162",
-												"1": "Manhattan",
-												"2": "Midtown East",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "169",
-												"1": "Bronx",
-												"2": "Mount Hope",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "176",
-												"1": "Staten Island",
-												"2": "Oakwood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "183",
-												"1": "Bronx",
-												"2": "Pelham Bay",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "190",
-												"1": "Brooklyn",
-												"2": "Prospect Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "197",
-												"1": "Queens",
-												"2": "Richmond Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "204",
-												"1": "Staten Island",
-												"2": "Rossville/Woodrow",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "211",
-												"1": "Manhattan",
-												"2": "SoHo",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "218",
-												"1": "Queens",
-												"2": "Springfield Gardens North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "225",
-												"1": "Brooklyn",
-												"2": "Stuyvesant Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "232",
-												"1": "Manhattan",
-												"2": "Two Bridges/Seward Park",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "239",
-												"1": "Manhattan",
-												"2": "Upper West Side South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "246",
-												"1": "Manhattan",
-												"2": "West Chelsea/Hudson Yards",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "253",
-												"1": "Queens",
-												"2": "Willets Point",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "260",
-												"1": "Queens",
-												"2": "Woodside",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "3",
-												"1": "Bronx",
-												"2": "Allerton/Pelham Gardens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "5",
-												"1": "Staten Island",
-												"2": "Arden Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "12",
-												"1": "Manhattan",
-												"2": "Battery Park",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "19",
-												"1": "Queens",
-												"2": "Bellerose",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "26",
-												"1": "Brooklyn",
-												"2": "Borough Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "33",
-												"1": "Brooklyn",
-												"2": "Brooklyn Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "40",
-												"1": "Brooklyn",
-												"2": "Carroll Gardens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "47",
-												"1": "Bronx",
-												"2": "Claremont/Bathgate",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "54",
-												"1": "Brooklyn",
-												"2": "Columbia Street",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "61",
-												"1": "Brooklyn",
-												"2": "Crown Heights North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "68",
-												"1": "Manhattan",
-												"2": "East Chelsea",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "75",
-												"1": "Manhattan",
-												"2": "East Harlem South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "82",
-												"1": "Queens",
-												"2": "Elmhurst",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "89",
-												"1": "Brooklyn",
-												"2": "Flatbush/Ditmas Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "96",
-												"1": "Queens",
-												"2": "Forest Park/Highland Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "103",
-												"1": "Manhattan",
-												"2": "Governor's Island/Ellis Island/Liberty Island",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "110",
-												"1": "Staten Island",
-												"2": "Great Kills Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "117",
-												"1": "Queens",
-												"2": "Hammels/Arverne",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "124",
-												"1": "Queens",
-												"2": "Howard Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "131",
-												"1": "Queens",
-												"2": "Jamaica Estates",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "138",
-												"1": "Queens",
-												"2": "LaGuardia Airport",
-												"3": "Airports"
-											},
-											{
-												"0": "145",
-												"1": "Queens",
-												"2": "Long Island City/Hunters Point",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "152",
-												"1": "Manhattan",
-												"2": "Manhattanville",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "159",
-												"1": "Bronx",
-												"2": "Melrose South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "166",
-												"1": "Manhattan",
-												"2": "Morningside Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "173",
-												"1": "Queens",
-												"2": "North Corona",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "180",
-												"1": "Queens",
-												"2": "Ozone Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "187",
-												"1": "Staten Island",
-												"2": "Port Richmond",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "194",
-												"1": "Manhattan",
-												"2": "Randalls Island",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "201",
-												"1": "Queens",
-												"2": "Rockaway Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "208",
-												"1": "Bronx",
-												"2": "Schuylerville/Edgewater Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "215",
-												"1": "Queens",
-												"2": "South Jamaica",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "222",
-												"1": "Brooklyn",
-												"2": "Starrett City",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "229",
-												"1": "Manhattan",
-												"2": "Sutton Place/Turtle Bay North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "236",
-												"1": "Manhattan",
-												"2": "Upper East Side North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "243",
-												"1": "Manhattan",
-												"2": "Washington Heights North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "250",
-												"1": "Bronx",
-												"2": "Westchester Village/Unionport",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "257",
-												"1": "Brooklyn",
-												"2": "Windsor Terrace",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "264",
-												"1": "Unknown",
-												"2": "NV",
-												"3": "N/A"
-											},
-											{
-												"0": "6",
-												"1": "Staten Island",
-												"2": "Arrochar/Fort Wadsworth",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "13",
-												"1": "Manhattan",
-												"2": "Battery Park City",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "20",
-												"1": "Bronx",
-												"2": "Belmont",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "27",
-												"1": "Queens",
-												"2": "Breezy Point/Fort Tilden/Riis Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "34",
-												"1": "Brooklyn",
-												"2": "Brooklyn Navy Yard",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "41",
-												"1": "Manhattan",
-												"2": "Central Harlem",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "48",
-												"1": "Manhattan",
-												"2": "Clinton East",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "55",
-												"1": "Brooklyn",
-												"2": "Coney Island",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "62",
-												"1": "Brooklyn",
-												"2": "Crown Heights South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "69",
-												"1": "Bronx",
-												"2": "East Concourse/Concourse Village",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "76",
-												"1": "Brooklyn",
-												"2": "East New York",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "83",
-												"1": "Queens",
-												"2": "Elmhurst/Maspeth",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "90",
-												"1": "Manhattan",
-												"2": "Flatiron",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "97",
-												"1": "Brooklyn",
-												"2": "Fort Greene",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "104",
-												"1": "Manhattan",
-												"2": "Governor's Island/Ellis Island/Liberty Island",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "111",
-												"1": "Brooklyn",
-												"2": "Green-Wood Cemetery",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "118",
-												"1": "Staten Island",
-												"2": "Heartland Village/Todt Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "125",
-												"1": "Manhattan",
-												"2": "Hudson Sq",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "132",
-												"1": "Queens",
-												"2": "JFK Airport",
-												"3": "Airports"
-											},
-											{
-												"0": "139",
-												"1": "Queens",
-												"2": "Laurelton",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "146",
-												"1": "Queens",
-												"2": "Long Island City/Queens Plaza",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "153",
-												"1": "Manhattan",
-												"2": "Marble Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "160",
-												"1": "Queens",
-												"2": "Middle Village",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "167",
-												"1": "Bronx",
-												"2": "Morrisania/Melrose",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "174",
-												"1": "Bronx",
-												"2": "Norwood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "181",
-												"1": "Brooklyn",
-												"2": "Park Slope",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "188",
-												"1": "Brooklyn",
-												"2": "Prospect-Lefferts Gardens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "195",
-												"1": "Brooklyn",
-												"2": "Red Hook",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "202",
-												"1": "Manhattan",
-												"2": "Roosevelt Island",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "209",
-												"1": "Manhattan",
-												"2": "Seaport",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "216",
-												"1": "Queens",
-												"2": "South Ozone Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "223",
-												"1": "Queens",
-												"2": "Steinway",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "230",
-												"1": "Manhattan",
-												"2": "Times Sq/Theatre District",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "237",
-												"1": "Manhattan",
-												"2": "Upper East Side South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "244",
-												"1": "Manhattan",
-												"2": "Washington Heights South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "251",
-												"1": "Staten Island",
-												"2": "Westerleigh",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "258",
-												"1": "Queens",
-												"2": "Woodhaven",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "265",
-												"1": "Unknown",
-												"2": "NA",
-												"3": "N/A"
-											},
-											{
-												"0": "10",
-												"1": "Queens",
-												"2": "Baisley Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "17",
-												"1": "Brooklyn",
-												"2": "Bedford",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "24",
-												"1": "Manhattan",
-												"2": "Bloomingdale",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "31",
-												"1": "Bronx",
-												"2": "Bronx Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "38",
-												"1": "Queens",
-												"2": "Cambria Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "45",
-												"1": "Manhattan",
-												"2": "Chinatown",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "52",
-												"1": "Brooklyn",
-												"2": "Cobble Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "59",
-												"1": "Bronx",
-												"2": "Crotona Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "66",
-												"1": "Brooklyn",
-												"2": "DUMBO/Vinegar Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "73",
-												"1": "Queens",
-												"2": "East Flushing",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "80",
-												"1": "Brooklyn",
-												"2": "East Williamsburg",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "87",
-												"1": "Manhattan",
-												"2": "Financial District North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "94",
-												"1": "Bronx",
-												"2": "Fordham South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "101",
-												"1": "Queens",
-												"2": "Glen Oaks",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "108",
-												"1": "Brooklyn",
-												"2": "Gravesend",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "115",
-												"1": "Staten Island",
-												"2": "Grymes Hill/Clifton",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "122",
-												"1": "Queens",
-												"2": "Hollis",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "129",
-												"1": "Queens",
-												"2": "Jackson Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "136",
-												"1": "Bronx",
-												"2": "Kingsbridge Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "143",
-												"1": "Manhattan",
-												"2": "Lincoln Square West",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "150",
-												"1": "Brooklyn",
-												"2": "Manhattan Beach",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "157",
-												"1": "Queens",
-												"2": "Maspeth",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "164",
-												"1": "Manhattan",
-												"2": "Midtown South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "171",
-												"1": "Queens",
-												"2": "Murray Hill-Queens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "178",
-												"1": "Brooklyn",
-												"2": "Ocean Parkway South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "185",
-												"1": "Bronx",
-												"2": "Pelham Parkway",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "192",
-												"1": "Queens",
-												"2": "Queensboro Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "199",
-												"1": "Bronx",
-												"2": "Rikers Island",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "206",
-												"1": "Staten Island",
-												"2": "Saint George/New Brighton",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "213",
-												"1": "Bronx",
-												"2": "Soundview/Castle Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "220",
-												"1": "Bronx",
-												"2": "Spuyten Duyvil/Kingsbridge",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "227",
-												"1": "Brooklyn",
-												"2": "Sunset Park East",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "234",
-												"1": "Manhattan",
-												"2": "Union Sq",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "241",
-												"1": "Bronx",
-												"2": "Van Cortlandt Village",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "248",
-												"1": "Bronx",
-												"2": "West Farms/Bronx River",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "255",
-												"1": "Brooklyn",
-												"2": "Williamsburg (North Side)",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "262",
-												"1": "Manhattan",
-												"2": "Yorkville East",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "9",
-												"1": "Queens",
-												"2": "Auburndale",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "16",
-												"1": "Queens",
-												"2": "Bayside",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "23",
-												"1": "Staten Island",
-												"2": "Bloomfield/Emerson Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "30",
-												"1": "Queens",
-												"2": "Broad Channel",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "37",
-												"1": "Brooklyn",
-												"2": "Bushwick South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "44",
-												"1": "Staten Island",
-												"2": "Charleston/Tottenville",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "51",
-												"1": "Bronx",
-												"2": "Co-Op City",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "58",
-												"1": "Bronx",
-												"2": "Country Club",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "65",
-												"1": "Brooklyn",
-												"2": "Downtown Brooklyn/MetroTech",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "72",
-												"1": "Brooklyn",
-												"2": "East Flatbush/Remsen Village",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "79",
-												"1": "Manhattan",
-												"2": "East Village",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "86",
-												"1": "Queens",
-												"2": "Far Rockaway",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "93",
-												"1": "Queens",
-												"2": "Flushing Meadows-Corona Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "100",
-												"1": "Manhattan",
-												"2": "Garment District",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "107",
-												"1": "Manhattan",
-												"2": "Gramercy",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "114",
-												"1": "Manhattan",
-												"2": "Greenwich Village South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "121",
-												"1": "Queens",
-												"2": "Hillcrest/Pomonok",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "128",
-												"1": "Manhattan",
-												"2": "Inwood Hill Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "135",
-												"1": "Queens",
-												"2": "Kew Gardens Hills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "142",
-												"1": "Manhattan",
-												"2": "Lincoln Square East",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "149",
-												"1": "Brooklyn",
-												"2": "Madison",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "156",
-												"1": "Staten Island",
-												"2": "Mariners Harbor",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "163",
-												"1": "Manhattan",
-												"2": "Midtown North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "170",
-												"1": "Manhattan",
-												"2": "Murray Hill",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "177",
-												"1": "Brooklyn",
-												"2": "Ocean Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "184",
-												"1": "Bronx",
-												"2": "Pelham Bay Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "191",
-												"1": "Queens",
-												"2": "Queens Village",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "198",
-												"1": "Queens",
-												"2": "Ridgewood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "205",
-												"1": "Queens",
-												"2": "Saint Albans",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "212",
-												"1": "Bronx",
-												"2": "Soundview/Bruckner",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "219",
-												"1": "Queens",
-												"2": "Springfield Gardens South",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "226",
-												"1": "Queens",
-												"2": "Sunnyside",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "233",
-												"1": "Manhattan",
-												"2": "UN/Turtle Bay South",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "240",
-												"1": "Bronx",
-												"2": "Van Cortlandt Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "247",
-												"1": "Bronx",
-												"2": "West Concourse",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "254",
-												"1": "Bronx",
-												"2": "Williamsbridge/Olinville",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "261",
-												"1": "Manhattan",
-												"2": "World Trade Center",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "2",
-												"1": "Queens",
-												"2": "Jamaica Bay",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "1",
-												"1": "EWR",
-												"2": "Newark Airport",
-												"3": "EWR"
-											},
-											{
-												"0": "7",
-												"1": "Queens",
-												"2": "Astoria",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "14",
-												"1": "Brooklyn",
-												"2": "Bay Ridge",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "21",
-												"1": "Brooklyn",
-												"2": "Bensonhurst East",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "28",
-												"1": "Queens",
-												"2": "Briarwood/Jamaica Hills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "35",
-												"1": "Brooklyn",
-												"2": "Brownsville",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "42",
-												"1": "Manhattan",
-												"2": "Central Harlem North",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "49",
-												"1": "Brooklyn",
-												"2": "Clinton Hill",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "56",
-												"1": "Queens",
-												"2": "Corona",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "63",
-												"1": "Brooklyn",
-												"2": "Cypress Hills",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "70",
-												"1": "Queens",
-												"2": "East Elmhurst",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "77",
-												"1": "Brooklyn",
-												"2": "East New York/Pennsylvania Avenue",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "84",
-												"1": "Staten Island",
-												"2": "Eltingville/Annadale/Prince's Bay",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "91",
-												"1": "Brooklyn",
-												"2": "Flatlands",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "98",
-												"1": "Queens",
-												"2": "Fresh Meadows",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "105",
-												"1": "Manhattan",
-												"2": "Governor's Island/Ellis Island/Liberty Island",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "112",
-												"1": "Brooklyn",
-												"2": "Greenpoint",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "119",
-												"1": "Bronx",
-												"2": "Highbridge",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "126",
-												"1": "Bronx",
-												"2": "Hunts Point",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "133",
-												"1": "Brooklyn",
-												"2": "Kensington",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "140",
-												"1": "Manhattan",
-												"2": "Lenox Hill East",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "147",
-												"1": "Bronx",
-												"2": "Longwood",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "154",
-												"1": "Brooklyn",
-												"2": "Marine Park/Floyd Bennett Field",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "161",
-												"1": "Manhattan",
-												"2": "Midtown Center",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "168",
-												"1": "Bronx",
-												"2": "Mott Haven/Port Morris",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "175",
-												"1": "Queens",
-												"2": "Oakland Gardens",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "182",
-												"1": "Bronx",
-												"2": "Parkchester",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "189",
-												"1": "Brooklyn",
-												"2": "Prospect Heights",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "196",
-												"1": "Queens",
-												"2": "Rego Park",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "203",
-												"1": "Queens",
-												"2": "Rosedale",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "210",
-												"1": "Brooklyn",
-												"2": "Sheepshead Bay",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "217",
-												"1": "Brooklyn",
-												"2": "South Williamsburg",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "224",
-												"1": "Manhattan",
-												"2": "Stuy Town/Peter Cooper Village",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "231",
-												"1": "Manhattan",
-												"2": "TriBeCa/Civic Center",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "238",
-												"1": "Manhattan",
-												"2": "Upper West Side North",
-												"3": "Yellow Zone"
-											},
-											{
-												"0": "245",
-												"1": "Staten Island",
-												"2": "West Brighton",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "252",
-												"1": "Queens",
-												"2": "Whitestone",
-												"3": "Boro Zone"
-											},
-											{
-												"0": "259",
-												"1": "Bronx",
-												"2": "Woodlawn/Wakefield",
-												"3": "Boro Zone"
-											}
-										],
-										"schema": [
-											{
-												"key": "0",
-												"name": "LocationID",
-												"type": "bigint"
-											},
-											{
-												"key": "1",
-												"name": "Borough",
-												"type": "string"
-											},
-											{
-												"key": "2",
-												"name": "Zone",
-												"type": "string"
-											},
-											{
-												"key": "3",
-												"name": "service_zone",
-												"type": "string"
-											}
-										],
-										"truncated": false
-									},
-									"isSummary": false,
-									"language": "scala"
-								},
-								"persist_state": {
-									"view": {
-										"type": "details",
-										"chartOptions": {
-											"chartType": "bar",
-											"aggregationType": "sum",
-											"categoryFieldKeys": [
-												"1"
-											],
-											"seriesFieldKeys": [
-												"0"
-											],
-											"isStacked": false
-										}
-									}
-								}
-							}
-						}
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_spark",
@@ -3442,8 +1813,9 @@
 						"nodeCount": 3,
 						"cores": 8,
 						"memory": 56,
-						"extraHeader": null
-					}
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
@@ -3459,7 +1831,6 @@
 							"\n",
 							"display(df)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 1
 					},
@@ -3484,7 +1855,6 @@
 							"val df = spark.sqlContext.sql(\"select * from xxx\")\r\n",
 							"df.write.sqlanalytics(\"SQLPool01.wwi.TopPurchases\", Constants.INTERNAL)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					}
@@ -3537,7 +1907,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "56bf857a-0144-48da-97a6-d7f10f4cc43b"
+						"spark.autotune.trackingId": "405f2caa-6701-410d-9d8b-d32d1429fb24"
 					}
 				},
 				"metadata": {
@@ -3656,7 +2026,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f3fb4ec0-fcb0-413a-8282-28ae7aafb153"
+						"spark.autotune.trackingId": "6dee615b-cf16-4053-90c7-eda204456a6e"
 					}
 				},
 				"metadata": {
@@ -3740,10 +2110,14 @@
 							"                  container_name=\"pcap\",\r\n",
 							"                  blob_name=\"test.pcapng\",\r\n",
 							"                  credential=\"4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==\")\r\n",
-							""
+							"\r\n",
+							"# blob = BlobClient(account_url= 'abfss://pcap@swethademostorageaccount.dfs.core.windows.net/yumaTestPcapfiles/test.pcapng',\r\n",
+							"#                  container_name=\"pcap\",\r\n",
+							"#                  blob_name=\"test.pcapng\",\r\n",
+							"#                  credential=\"4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==\")"
 						],
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 48
 					},
 					{
 						"cell_type": "code",
@@ -3759,12 +2133,17 @@
 							}
 						},
 						"source": [
-							"data = blob.download_blob()\r\n",
+							"data = blob.download_blob().read\r\n",
+							"data.summary\r\n",
+							"# DEST_FILE = './mytest.pcapng'\r\n",
 							"\r\n",
-							"# res = subprocess.run(tshark_command, shell=True, capture_output=True, check=True)"
+							"# res = subprocess.run(tshark_command, shell=True, capture_output=True, check=True)\r\n",
+							"# with open( , \"rb\") as my_blob:\r\n",
+							"#     blob_data = blob.download_blob()\r\n",
+							"#     blob_data.readinto(my_blob)"
 						],
 						"outputs": [],
-						"execution_count": 28
+						"execution_count": 49
 					},
 					{
 						"cell_type": "code",
@@ -3831,32 +2210,87 @@
 						],
 						"outputs": [],
 						"execution_count": 35
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"# from azure.storage.blob.blockblobservice import BlockBlobService\r\n",
-							"\r\n",
-							"# block_blob_service = BlockBlobService(account_name='abfss://pcap@swethademostorageaccount.dfs.core.windows.net/yumaTestPcapfiles/test.pcapng', \r\n",
-							"# account_key='4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==')"
-						],
-						"outputs": [],
-						"execution_count": 21
 					}
 				]
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "mybatch",
+						"type": "Custom",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"command": "tshark -r test.pcap -T fields, -e eth.dst -e data > thursday-100M.csv",
+							"resourceLinkedService": {
+								"referenceName": "pcap",
+								"type": "LinkedServiceReference"
+							},
+							"folderPath": "pcap/yumaTestPcapfiles",
+							"referenceObjects": {
+								"linkedServices": [],
+								"datasets": []
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureBatch1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureBatch1')]",
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureBatch1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBatch",
+				"typeProperties": {
+					"batchUri": "[parameters('AzureBatch1_properties_typeProperties_batchUri')]",
+					"poolName": "[parameters('AzureBatch1_properties_typeProperties_poolName')]",
+					"accountName": "[parameters('AzureBatch1_properties_typeProperties_accountName')]",
+					"linkedServiceName": {
+						"referenceName": "pcap",
+						"type": "LinkedServiceReference"
+					},
+					"accessKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureBatch1_accessKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
 		}
 	]
 }
