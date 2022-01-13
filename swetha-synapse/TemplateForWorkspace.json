@@ -1,0 +1,3639 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "swetha-synapse"
+		},
+		"SwethaTaxisLS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SwethaTaxisLS'"
+		},
+		"TaxiStorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'TaxiStorage'"
+		},
+		"pcap_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'pcap'"
+		},
+		"pcapResult_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'pcapResult'"
+		},
+		"swetha-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'swetha-synapse-WorkspaceDefaultSqlServer'"
+		},
+		"nyc_tlc_yellow_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'nyc_tlc_yellow'"
+		},
+		"pcapResult_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://swethataxidatalake.dfs.core.windows.net"
+		},
+		"swetha-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://swethataxidatalake.dfs.core.windows.net"
+		},
+		"us-decennial-census-zip_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'us-decennial-census-zip'"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/SwethaSparkPool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/testSparkpool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Adding Notebook to Pipline')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Exploration Notebook",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "Exploration Notebook",
+								"type": "NotebookReference"
+							},
+							"parameters": {
+								"runId": {
+									"value": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
+							},
+							"snapshot": true
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-09T16:06:13Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/Exploration Notebook')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Process Dimensions')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dim RateCodes",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "RateCodeId",
+											"type": "Int32",
+											"physicalType": "int"
+										},
+										"sink": {
+											"name": "RateCodeId",
+											"type": "Int32",
+											"physicalType": "INT_32"
+										}
+									},
+									{
+										"source": {
+											"name": "RateCode",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "RateCode",
+											"type": "String",
+											"physicalType": "UTF8"
+										}
+									},
+									{
+										"source": {
+											"name": "IsApproved",
+											"type": "Boolean",
+											"physicalType": "bit"
+										},
+										"sink": {
+											"name": "IsApproved",
+											"type": "Boolean",
+											"physicalType": "BOOLEAN"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RateCodesSqlDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "RateCodesParquetDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-08T21:37:35Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/RateCodesSqlDataset')]",
+				"[concat(variables('workspaceId'), '/datasets/RateCodesParquetDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Process Facts')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fact GreenTaxis",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Fact GreenTaxis",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"GreenTaxis": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-08T21:52:58Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Fact GreenTaxis')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_m8p')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcapResult",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "yumatestPcap",
+						"fileSystem": "pcapuncompressed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcapResult')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/GreenTaxiCsvDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "TaxiStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "GreenTaxis_201911.csv",
+						"container": "taxisource"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/TaxiStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/GreenTaxiParquetDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "swetha-synapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Facts/GreenTaxis.parque",
+						"fileSystem": "taxioutput"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/swetha-synapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RateCodesParquetDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "swetha-synapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "RateCodes.parquet",
+						"folderPath": "Dimensions",
+						"fileSystem": "taxioutput"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/swetha-synapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RateCodesSqlDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SwethaTaxisLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "RateCodeId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "RateCode",
+						"type": "varchar"
+					},
+					{
+						"name": "IsApproved",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "RateCodes"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/SwethaTaxisLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_0qe')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "rpl-dio-mc-nsa-optional-tlv-dissector-sample.pcap.gz",
+						"container": "pcap"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_a2t')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "rpl-dio-mc-nsa-optional-tlv-dissector-sample.pcap.gz",
+						"container": "pcap"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_dea')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "rpl-dio-mc-nsa-optional-tlv-dissector-sample.pcap.gz",
+						"container": "pcap"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_jck')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "test.pcapng",
+						"folderPath": "yumaTestPcapfiles",
+						"container": "pcap"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_m8p')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "test.pcapng",
+						"folderPath": "yumaTestPcapfiles",
+						"container": "pcap"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_p89')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "TaxiStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ipv4frags.pcap",
+						"container": "taxisource"
+					},
+					"compression": {
+						"type": "GZip",
+						"level": "Optimal"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/TaxiStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_r51')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ipv4frags.pcap",
+						"container": "pcap"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_t66')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pcap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ipv4frags.pcap",
+						"container": "pcap"
+					},
+					"compression": {
+						"type": "GZip",
+						"level": "Optimal"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SwethaTaxisLS')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SwethaTaxisLS_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TaxiStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('TaxiStorage_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/nyc_tlc_yellow')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": "[parameters('nyc_tlc_yellow_sasUri')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pcap')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('pcap_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pcapResult')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('pcapResult_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('pcapResult_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/swetha-synapse-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('swetha-synapse-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/swetha-synapse-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('swetha-synapse-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/us-decennial-census-zip')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": "[parameters('us-decennial-census-zip_sasUri')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Fact GreenTaxis')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "GreenTaxiCsvDataset",
+								"type": "DatasetReference"
+							},
+							"name": "GreenTaxis"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "GreenTaxiParquetDataset",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "RenamedColumns"
+						},
+						{
+							"name": "DerivedColumn1"
+						}
+					],
+					"script": "source(output(\n\t\tVendorID as short,\n\t\tlpep_pickup_datetime as timestamp,\n\t\tlpep_dropoff_datetime as timestamp,\n\t\tstore_and_fwd_flag as boolean,\n\t\tRatecodeID as short,\n\t\tPULocationID as short,\n\t\tDOLocationID as short,\n\t\tpassenger_count as short,\n\t\ttrip_distance as double,\n\t\tfare_amount as double,\n\t\textra as double,\n\t\tmta_tax as double,\n\t\ttip_amount as double,\n\t\ttolls_amount as double,\n\t\tehail_fee as string,\n\t\timprovement_surcharge as double,\n\t\ttotal_amount as double,\n\t\tpayment_type as short,\n\t\ttrip_type as short,\n\t\tcongestion_surcharge as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> GreenTaxis\nGreenTaxis select(mapColumn(\n\t\tVendorID,\n\t\tPickUpTime = lpep_pickup_datetime,\n\t\tDropOffTime = lpep_dropoff_datetime,\n\t\tstore_and_fwd_flag,\n\t\tRatecodeID,\n\t\tPickUpLocationID = PULocationID,\n\t\tDropOffLocationID = DOLocationID,\n\t\tPassengerCount = passenger_count,\n\t\tTripDistance = trip_distance,\n\t\tfare_amount,\n\t\textra,\n\t\tmta_tax,\n\t\ttip_amount,\n\t\ttolls_amount,\n\t\tehail_fee,\n\t\timprovement_surcharge,\n\t\ttotal_amount,\n\t\tpayment_type,\n\t\ttrip_type,\n\t\tcongestion_surcharge\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenamedColumns\nRenamedColumns derive(TripYear = year(PickUpTime)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/GreenTaxiCsvDataset')]",
+				"[concat(variables('workspaceId'), '/datasets/GreenTaxiParquetDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/COPY statement - sql script')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'TaxiZonesCopy' AND O.TYPE = 'U' AND S.NAME = 'main')\nCREATE TABLE TaxiZonesCopy\n\t(\n\t [LocationID] bigint,\n\t [Borough] nvarchar(500),\n\t [Zone] nvarchar(500),\n\t [service_zone] nvarchar(500)\n\t)\nWITH\n\t(\n\tDISTRIBUTION = ROUND_ROBIN,\n\t CLUSTERED COLUMNSTORE INDEX\n\t -- HEAP\n\t)\nGO\n\n--Uncomment the 4 lines below to create a stored procedure for data pipeline orchestration​\n--CREATE PROC bulk_load_TaxiZonesCopy\n--AS\n--BEGIN\nCOPY INTO TaxiZonesCopy\n(LocationID 1, Borough 2, Zone 3, service_zone 4)\nFROM 'https://swethataxidatalake.dfs.core.windows.net/taxidata/TaxiZones/*.csv'\nWITH\n(\n\tFILE_TYPE = 'CSV'\n\t,MAXERRORS = 10\n\t,FIRSTROW = 2\n\t,ERRORFILE = 'https://swethataxidatalake.dfs.core.windows.net/taxidata/ErrorRows/TaxiZones/'\n)\n--END\nGO\n\nSELECT TOP 100 * FROM TaxiZonesCopy\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "TaxiWarehouse",
+						"poolName": "TaxiWarehouse"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Distribution types')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- create RoundRobin table for TaxiZonesCopy\nCREATE TABLE Taxi_RoundRobin\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN\n)\nAS\nSELECT *\nFROM TaxiZonesCopy\n\n-- Check the distribution data\nDBCC PDW_SHOWSPACEUSED('Taxi_RoundRobin')\n\n\n-- create Hash Distributions table for TaxiZonesCopy\nCREATE TABLE Taxi_Hash\nWITH\n(\n    DISTRIBUTION = HASH(LocationID)\n)\nAS\nSELECT *\nFROM TaxiZonesCopy\n\n-- Check the distribution data\nDBCC PDW_SHOWSPACEUSED('Taxi_Hash')\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "TaxiWarehouse",
+						"poolName": "TaxiWarehouse"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/taxi zones - external table')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Create master key\n-- DROP MASTER KEY;\n-- GO\n\nCREATE MASTER KEY;\nGO\n\n\n-- Create credential to access Data Lake\nCREATE DATABASE SCOPED CREDENTIAL SA4DataLakeCredential\nWITH \n\tIDENTITY = 'user', \n\tSecret = 'xhsez5R6b49o4hrol/yG2fDa8V1OCHdHo/6QJ0wa5qM5l3Zic3CLhg+LrvfmtdJehO0bw+2BFz3Cvt8wEoNaEg==';\nGO\n\n-- Create external data source, pointing to Data Lake\nCREATE EXTERNAL DATA SOURCE SA4DataLake\nwith (  \n      TYPE = HADOOP,\n      LOCATION ='abfss://taxidata@swethataxidatalake.dfs.core.windows.net',  \n      CREDENTIAL = SA4DataLakeCredential  \n);  \nGO\n\n-- Create external file format\nCREATE EXTERNAL FILE FORMAT CSVFileFormat4\nWITH \n(   FORMAT_TYPE = DELIMITEDTEXT\n,   FORMAT_OPTIONS  \n\t(   \n\t\tFIELD_TERMINATOR   = ','\n\t\t, STRING_DELIMITER = '\"'\n        , DATE_FORMAT      = 'yyyy-MM-dd HH:mm:ss'\n        , USE_TYPE_DEFAULT = FALSE\n        , FIRST_ROW  = 2\n    )\n);\nGO\n\n-- Create schema for external resources\nCREATE SCHEMA ext4\nGO\n\n--Recreate it if already present\nDROP EXTERNAL TABLE ext4.TaxiZones\n\n-- Create external table for Taxi Zones\nCREATE EXTERNAL TABLE ext4.TaxiZones\n(\n\tLocationId INT,\n\tBorough NVARCHAR(100),\n\tZone NVARCHAR(100),\n    ServiceZone NVARCHAR(100)\n)\nWITH\n(\n    DATA_SOURCE = SA4DataLake\n  , FILE_FORMAT = CSVFileFormat4\n  , LOCATION='/TaxiZones/TaxiZones1.csv'  \n)\nGO\n\nSELECT * FROM ext4.TaxiZones\nGO\n\n-- -- Drop external table\n-- DROP EXTERNAL TABLE ext3.TaxiZones\n\n-- -- Recreate external table\n-- CREATE EXTERNAL TABLE ext3.TaxiZones\n-- (\n-- \tLocationId INT,\n-- \tBorough NVARCHAR(100),\n-- \tZone NVARCHAR(100),\n--     ServiceZone NVARCHAR(100)\n-- )\n-- WITH\n-- (\n--     DATA_SOURCE = SA3DataLake\n--   , FILE_FORMAT = CSVFileFormat3\n--   , LOCATION='/TaxiZones/'    \n--   , REJECT_TYPE = VALUE\n--   , REJECT_VALUE = 1\n--   , REJECTED_ROW_LOCATION='/Errors/TaxiZones'\n-- )\n-- GO\n\n-- SELECT * FROM ext3.TaxiZones",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "TaxiWarehouse",
+						"poolName": "TaxiWarehouse"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Exploration Notebook')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SwethaSparkPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "c21c0101-effa-45e4-a518-765499e8a700"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/SwethaSparkPool",
+						"name": "SwethaSparkPool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SwethaSparkPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"\"Hello World\""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"sum = 1+1\r\n",
+							"print(sum)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 4
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Process FHV data')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SwethaSparkPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "b2187a32-d31e-4221-9157-60712ca80dd9"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/SwethaSparkPool",
+						"name": "SwethaSparkPool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SwethaSparkPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# Create file path variable\r\n",
+							"fhvTaxisFilePath = 'abfss://taxidata@swethataxidatalake.dfs.core.windows.net/FhvTaxis*.csv'"
+						],
+						"outputs": [],
+						"execution_count": 35
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Read FHV Taxis data\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF = (\r\n",
+							"                        spark\r\n",
+							"                            .read\r\n",
+							"\r\n",
+							"                            .option(\"header\", \"true\")\r\n",
+							"                            .option(\"inferSchema\", \"true\")\r\n",
+							"\r\n",
+							"                            .csv(fhvTaxisFilePath)\r\n",
+							"                    )\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF.printSchema"
+						],
+						"outputs": [],
+						"execution_count": 36
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# Display FHV Taxis data\r\n",
+							"\r\n",
+							"display(\r\n",
+							"    fhvTaxiTripDataDF.limit(10)\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 37
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"#Display summary of FHV Taxis\r\n",
+							"\r\n",
+							"display(\r\n",
+							"    fhvTaxiTripDataDF,\r\n",
+							"    summary=True\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 38
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Select only limited columns\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF = (\r\n",
+							"                        fhvTaxiTripDataDF\r\n",
+							"                            .select(\r\n",
+							"                                    \"hvfhs_license_num\",\r\n",
+							"                                    \"dispatching_base_num\",\r\n",
+							"                                    \"Pickup_DateTime\", \r\n",
+							"                                    \"DropOff_DateTime\", \r\n",
+							"                                    \"PUlocationID\", \r\n",
+							"                                    \"DOlocationID\"                                    \r\n",
+							"                                )\r\n",
+							"                    )\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF.printSchema"
+						],
+						"outputs": [],
+						"execution_count": 39
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(\r\n",
+							"    fhvTaxiTripDataDF.limit(10)\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 40
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Rename the columns\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF = (\r\n",
+							"                        fhvTaxiTripDataDF\r\n",
+							"                            .withColumnRenamed(\"hvfhs_license_num\", \"CompanyLicenseId\")\r\n",
+							"                            .withColumnRenamed(\"dispatching_base_num\", \"BaseLicenseId\")\r\n",
+							"                            .withColumnRenamed(\"Pickup_DateTime\", \"PickupTime\")\r\n",
+							"                            .withColumnRenamed(\"DropOff_DateTime\", \"DropTime\")\r\n",
+							"                            .withColumnRenamed(\"PUlocationID\", \"PickupLocationId\")\r\n",
+							"                            .withColumnRenamed(\"DOlocationID\", \"DropLocationId\")                            \r\n",
+							"                    )\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF.printSchema"
+						],
+						"outputs": [],
+						"execution_count": 41
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(\r\n",
+							"    fhvTaxiTripDataDF.limit(10)\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"# Create derived columns for year, month and day\r\n",
+							"fhvTaxiTripDataDF = (\r\n",
+							"                        fhvTaxiTripDataDF\r\n",
+							"                            .withColumn(\"TripYear\", year(col(\"PickupTime\")))\r\n",
+							"                            .withColumn(\"TripMonth\", month(col(\"PickupTime\")))\r\n",
+							"                            .withColumn(\"TripDay\", dayofmonth(col(\"PickupTime\")))\r\n",
+							"                    )\r\n",
+							"\r\n",
+							"fhvTaxiTripDataDF.printSchema"
+						],
+						"outputs": [],
+						"execution_count": 43
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"display(\r\n",
+							"    fhvTaxiTripDataDF.limit(10)\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# Filter inaccurate data\r\n",
+							"\r\n",
+							"# fhvTaxiTripDataDF = (\r\n",
+							"#                         fhvTaxiTripDataDF\r\n",
+							"#                             .where(\"PickupTime >= '2019-11-01' AND PickupTime < '2019-12-01'\")\r\n",
+							"#                     )\r\n",
+							"\r\n",
+							"\r\n",
+							"# display(fhvTaxiTripDataDF.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Create file path variable\r\n",
+							"\r\n",
+							"fhvBasesFilePath = 'abfss://taxidata@swethataxidatalake.dfs.core.windows.net/FhvBases.json'"
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# Read FHV Bases json file\r\n",
+							"\r\n",
+							"fhvBasesDF = (\r\n",
+							"                spark\r\n",
+							"                  .read\r\n",
+							"                  .option(\"multiline\", \"true\")\r\n",
+							"                  .json(fhvBasesFilePath)\r\n",
+							"             )\r\n",
+							"\r\n",
+							"display(fhvBasesDF)"
+						],
+						"outputs": [],
+						"execution_count": 47
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"from pyspark.sql.functions import *\r\n",
+							"\r\n",
+							"# Flatten FHV Bases data\r\n",
+							"\r\n",
+							"fhvBasesFlatDF = (\r\n",
+							"                    fhvBasesDF\r\n",
+							"                        .select(\r\n",
+							"                                    col(\"License Number\").alias(\"BaseLicenseId\"),\r\n",
+							"                                    col(\"Type of Base\").alias(\"BaseType\"),\r\n",
+							"\r\n",
+							"                                    col(\"Address.Building\").alias(\"AddressBuilding\"),\r\n",
+							"                                    col(\"Address.Street\").alias(\"AddressStreet\"),\r\n",
+							"                                    col(\"Address.City\").alias(\"AddressCity\"),\r\n",
+							"                                    col(\"Address.State\").alias(\"AddressState\"),\r\n",
+							"                                    col(\"Address.PostCode\").alias(\"AddressPostalCode\")\r\n",
+							"                               )\r\n",
+							"                )\r\n",
+							"\r\n",
+							"display(fhvBasesFlatDF)"
+						],
+						"outputs": [],
+						"execution_count": 48
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# Create a dataframe joining FHV trip data with bases\r\n",
+							"\r\n",
+							"fhvTaxiTripDataWithBasesDF = (\r\n",
+							"                                fhvTaxiTripDataDF\r\n",
+							"                                     .join(fhvBasesFlatDF,                                               \r\n",
+							"                                               \"BaseLicenseId\",\r\n",
+							"                                                \"inner\"\r\n",
+							"                                          )\r\n",
+							"                             )\r\n",
+							"\r\n",
+							"display(fhvTaxiTripDataWithBasesDF)"
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "sparksql"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%sql\r\n",
+							"\r\n",
+							"CREATE DATABASE FhvWarehouse1"
+						],
+						"outputs": [],
+						"execution_count": 51
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"(\r\n",
+							"    fhvTaxiTripDataDF\r\n",
+							"        .write\r\n",
+							"        .partitionBy(\"TripYear\", \"TripMonth\", \"TripDay\")\r\n",
+							"        .mode(\"overwrite\")\r\n",
+							"        .parquet(\"abfss://taxidata@swethataxidatalake.dfs.core.windows.net/Facts/FhvTaxis.parquet\")\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 52
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"(\r\n",
+							"    fhvTaxiTripDataDF\r\n",
+							"        .write\r\n",
+							"        .partitionBy(\"TripYear\", \"TripMonth\", \"TripDay\")\r\n",
+							"        .mode(\"overwrite\")\r\n",
+							"        .saveAsTable(\"fhvwarehouse.FHVTripsManaged\")\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 55
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"(\r\n",
+							"    fhvTaxiTripDataDF\r\n",
+							"        .write\r\n",
+							"        .partitionBy(\"TripYear\", \"TripMonth\", \"TripDay\")\r\n",
+							"        .mode(\"overwrite\")\r\n",
+							"        .option(\"path\", \"abfss://taxidata@swethataxidatalake.dfs.core.windows.net/Facts/FhvTaxis.parquet\")\r\n",
+							"        .saveAsTable(\"fhvwarehouse.FHVTrips\")\r\n",
+							")"
+						],
+						"outputs": [],
+						"execution_count": 56
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/open pcap file')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SwethaSparkPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "e430b4c2-c54e-4b76-85a4-d716a8d307dd"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/SwethaSparkPool",
+						"name": "SwethaSparkPool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SwethaSparkPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"# file = 'https://swethataxidatalake.dfs.core.windows.net/pcapuncompressed/ipv4frags.pcap'\r\n",
+							"\r\n",
+							"file = 'abfss://pcapuncompressed@swethataxidatalake.dfs.core.windows.net/ipv4frags.pcap'"
+						],
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import os"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"os.system ('tshark -r'+file +'>'+ file +'.txt')"
+						],
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# df = spark.read.format(\"pcap\").option(\"inferSchema\", \"true\").option(\"inferSchema\", \"true\").load(file)\r\n",
+							"# display(df)"
+						],
+						"outputs": [],
+						"execution_count": 10
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# import dpkt\r\n",
+							"# f = open(file)\r\n",
+							"# pcap = dpkt.pcap.Reader(f)"
+						],
+						"outputs": [],
+						"execution_count": 6
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/spark pool reading data from dedicated pool')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SwethaSparkPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "469a86b1-e6b2-4f24-8187-72b5c787d98e"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1",
+						"state": {
+							"d9d31107-0554-4d5b-8151-d0d9d9fea7ec": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "4",
+												"1": "Manhattan",
+												"2": "Alphabet City",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "11",
+												"1": "Brooklyn",
+												"2": "Bath Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "18",
+												"1": "Bronx",
+												"2": "Bedford Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "25",
+												"1": "Brooklyn",
+												"2": "Boerum Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "32",
+												"1": "Bronx",
+												"2": "Bronxdale",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "39",
+												"1": "Brooklyn",
+												"2": "Canarsie",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "46",
+												"1": "Bronx",
+												"2": "City Island",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "53",
+												"1": "Queens",
+												"2": "College Point",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "60",
+												"1": "Bronx",
+												"2": "Crotona Park East",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "67",
+												"1": "Brooklyn",
+												"2": "Dyker Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "74",
+												"1": "Manhattan",
+												"2": "East Harlem North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "81",
+												"1": "Bronx",
+												"2": "Eastchester",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "88",
+												"1": "Manhattan",
+												"2": "Financial District South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "95",
+												"1": "Queens",
+												"2": "Forest Hills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "102",
+												"1": "Queens",
+												"2": "Glendale",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "109",
+												"1": "Staten Island",
+												"2": "Great Kills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "116",
+												"1": "Manhattan",
+												"2": "Hamilton Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "123",
+												"1": "Brooklyn",
+												"2": "Homecrest",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "130",
+												"1": "Queens",
+												"2": "Jamaica",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "137",
+												"1": "Manhattan",
+												"2": "Kips Bay",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "144",
+												"1": "Manhattan",
+												"2": "Little Italy/NoLiTa",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "8",
+												"1": "Queens",
+												"2": "Astoria Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "151",
+												"1": "Manhattan",
+												"2": "Manhattan Valley",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "15",
+												"1": "Queens",
+												"2": "Bay Terrace/Fort Totten",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "158",
+												"1": "Manhattan",
+												"2": "Meatpacking/West Village West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "22",
+												"1": "Brooklyn",
+												"2": "Bensonhurst West",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "165",
+												"1": "Brooklyn",
+												"2": "Midwood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "29",
+												"1": "Brooklyn",
+												"2": "Brighton Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "172",
+												"1": "Staten Island",
+												"2": "New Dorp/Midland Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "36",
+												"1": "Brooklyn",
+												"2": "Bushwick North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "179",
+												"1": "Queens",
+												"2": "Old Astoria",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "43",
+												"1": "Manhattan",
+												"2": "Central Park",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "186",
+												"1": "Manhattan",
+												"2": "Penn Station/Madison Sq West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "50",
+												"1": "Manhattan",
+												"2": "Clinton West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "193",
+												"1": "Queens",
+												"2": "Queensbridge/Ravenswood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "57",
+												"1": "Queens",
+												"2": "Corona",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "200",
+												"1": "Bronx",
+												"2": "Riverdale/North Riverdale/Fieldston",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "64",
+												"1": "Queens",
+												"2": "Douglaston",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "207",
+												"1": "Queens",
+												"2": "Saint Michaels Cemetery/Woodside",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "71",
+												"1": "Brooklyn",
+												"2": "East Flatbush/Farragut",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "214",
+												"1": "Staten Island",
+												"2": "South Beach/Dongan Hills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "78",
+												"1": "Bronx",
+												"2": "East Tremont",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "221",
+												"1": "Staten Island",
+												"2": "Stapleton",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "85",
+												"1": "Brooklyn",
+												"2": "Erasmus",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "228",
+												"1": "Brooklyn",
+												"2": "Sunset Park West",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "92",
+												"1": "Queens",
+												"2": "Flushing",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "235",
+												"1": "Bronx",
+												"2": "University Heights/Morris Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "99",
+												"1": "Staten Island",
+												"2": "Freshkills Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "242",
+												"1": "Bronx",
+												"2": "Van Nest/Morris Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "106",
+												"1": "Brooklyn",
+												"2": "Gowanus",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "249",
+												"1": "Manhattan",
+												"2": "West Village",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "113",
+												"1": "Manhattan",
+												"2": "Greenwich Village North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "256",
+												"1": "Brooklyn",
+												"2": "Williamsburg (South Side)",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "120",
+												"1": "Manhattan",
+												"2": "Highbridge Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "263",
+												"1": "Manhattan",
+												"2": "Yorkville West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "127",
+												"1": "Manhattan",
+												"2": "Inwood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "134",
+												"1": "Queens",
+												"2": "Kew Gardens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "141",
+												"1": "Manhattan",
+												"2": "Lenox Hill West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "148",
+												"1": "Manhattan",
+												"2": "Lower East Side",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "155",
+												"1": "Brooklyn",
+												"2": "Marine Park/Mill Basin",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "162",
+												"1": "Manhattan",
+												"2": "Midtown East",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "169",
+												"1": "Bronx",
+												"2": "Mount Hope",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "176",
+												"1": "Staten Island",
+												"2": "Oakwood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "183",
+												"1": "Bronx",
+												"2": "Pelham Bay",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "190",
+												"1": "Brooklyn",
+												"2": "Prospect Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "197",
+												"1": "Queens",
+												"2": "Richmond Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "204",
+												"1": "Staten Island",
+												"2": "Rossville/Woodrow",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "211",
+												"1": "Manhattan",
+												"2": "SoHo",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "218",
+												"1": "Queens",
+												"2": "Springfield Gardens North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "225",
+												"1": "Brooklyn",
+												"2": "Stuyvesant Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "232",
+												"1": "Manhattan",
+												"2": "Two Bridges/Seward Park",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "239",
+												"1": "Manhattan",
+												"2": "Upper West Side South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "246",
+												"1": "Manhattan",
+												"2": "West Chelsea/Hudson Yards",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "253",
+												"1": "Queens",
+												"2": "Willets Point",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "260",
+												"1": "Queens",
+												"2": "Woodside",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "3",
+												"1": "Bronx",
+												"2": "Allerton/Pelham Gardens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "5",
+												"1": "Staten Island",
+												"2": "Arden Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "12",
+												"1": "Manhattan",
+												"2": "Battery Park",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "19",
+												"1": "Queens",
+												"2": "Bellerose",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "26",
+												"1": "Brooklyn",
+												"2": "Borough Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "33",
+												"1": "Brooklyn",
+												"2": "Brooklyn Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "40",
+												"1": "Brooklyn",
+												"2": "Carroll Gardens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "47",
+												"1": "Bronx",
+												"2": "Claremont/Bathgate",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "54",
+												"1": "Brooklyn",
+												"2": "Columbia Street",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "61",
+												"1": "Brooklyn",
+												"2": "Crown Heights North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "68",
+												"1": "Manhattan",
+												"2": "East Chelsea",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "75",
+												"1": "Manhattan",
+												"2": "East Harlem South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "82",
+												"1": "Queens",
+												"2": "Elmhurst",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "89",
+												"1": "Brooklyn",
+												"2": "Flatbush/Ditmas Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "96",
+												"1": "Queens",
+												"2": "Forest Park/Highland Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "103",
+												"1": "Manhattan",
+												"2": "Governor's Island/Ellis Island/Liberty Island",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "110",
+												"1": "Staten Island",
+												"2": "Great Kills Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "117",
+												"1": "Queens",
+												"2": "Hammels/Arverne",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "124",
+												"1": "Queens",
+												"2": "Howard Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "131",
+												"1": "Queens",
+												"2": "Jamaica Estates",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "138",
+												"1": "Queens",
+												"2": "LaGuardia Airport",
+												"3": "Airports"
+											},
+											{
+												"0": "145",
+												"1": "Queens",
+												"2": "Long Island City/Hunters Point",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "152",
+												"1": "Manhattan",
+												"2": "Manhattanville",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "159",
+												"1": "Bronx",
+												"2": "Melrose South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "166",
+												"1": "Manhattan",
+												"2": "Morningside Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "173",
+												"1": "Queens",
+												"2": "North Corona",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "180",
+												"1": "Queens",
+												"2": "Ozone Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "187",
+												"1": "Staten Island",
+												"2": "Port Richmond",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "194",
+												"1": "Manhattan",
+												"2": "Randalls Island",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "201",
+												"1": "Queens",
+												"2": "Rockaway Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "208",
+												"1": "Bronx",
+												"2": "Schuylerville/Edgewater Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "215",
+												"1": "Queens",
+												"2": "South Jamaica",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "222",
+												"1": "Brooklyn",
+												"2": "Starrett City",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "229",
+												"1": "Manhattan",
+												"2": "Sutton Place/Turtle Bay North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "236",
+												"1": "Manhattan",
+												"2": "Upper East Side North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "243",
+												"1": "Manhattan",
+												"2": "Washington Heights North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "250",
+												"1": "Bronx",
+												"2": "Westchester Village/Unionport",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "257",
+												"1": "Brooklyn",
+												"2": "Windsor Terrace",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "264",
+												"1": "Unknown",
+												"2": "NV",
+												"3": "N/A"
+											},
+											{
+												"0": "6",
+												"1": "Staten Island",
+												"2": "Arrochar/Fort Wadsworth",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "13",
+												"1": "Manhattan",
+												"2": "Battery Park City",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "20",
+												"1": "Bronx",
+												"2": "Belmont",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "27",
+												"1": "Queens",
+												"2": "Breezy Point/Fort Tilden/Riis Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "34",
+												"1": "Brooklyn",
+												"2": "Brooklyn Navy Yard",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "41",
+												"1": "Manhattan",
+												"2": "Central Harlem",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "48",
+												"1": "Manhattan",
+												"2": "Clinton East",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "55",
+												"1": "Brooklyn",
+												"2": "Coney Island",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "62",
+												"1": "Brooklyn",
+												"2": "Crown Heights South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "69",
+												"1": "Bronx",
+												"2": "East Concourse/Concourse Village",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "76",
+												"1": "Brooklyn",
+												"2": "East New York",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "83",
+												"1": "Queens",
+												"2": "Elmhurst/Maspeth",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "90",
+												"1": "Manhattan",
+												"2": "Flatiron",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "97",
+												"1": "Brooklyn",
+												"2": "Fort Greene",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "104",
+												"1": "Manhattan",
+												"2": "Governor's Island/Ellis Island/Liberty Island",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "111",
+												"1": "Brooklyn",
+												"2": "Green-Wood Cemetery",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "118",
+												"1": "Staten Island",
+												"2": "Heartland Village/Todt Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "125",
+												"1": "Manhattan",
+												"2": "Hudson Sq",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "132",
+												"1": "Queens",
+												"2": "JFK Airport",
+												"3": "Airports"
+											},
+											{
+												"0": "139",
+												"1": "Queens",
+												"2": "Laurelton",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "146",
+												"1": "Queens",
+												"2": "Long Island City/Queens Plaza",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "153",
+												"1": "Manhattan",
+												"2": "Marble Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "160",
+												"1": "Queens",
+												"2": "Middle Village",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "167",
+												"1": "Bronx",
+												"2": "Morrisania/Melrose",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "174",
+												"1": "Bronx",
+												"2": "Norwood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "181",
+												"1": "Brooklyn",
+												"2": "Park Slope",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "188",
+												"1": "Brooklyn",
+												"2": "Prospect-Lefferts Gardens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "195",
+												"1": "Brooklyn",
+												"2": "Red Hook",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "202",
+												"1": "Manhattan",
+												"2": "Roosevelt Island",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "209",
+												"1": "Manhattan",
+												"2": "Seaport",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "216",
+												"1": "Queens",
+												"2": "South Ozone Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "223",
+												"1": "Queens",
+												"2": "Steinway",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "230",
+												"1": "Manhattan",
+												"2": "Times Sq/Theatre District",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "237",
+												"1": "Manhattan",
+												"2": "Upper East Side South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "244",
+												"1": "Manhattan",
+												"2": "Washington Heights South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "251",
+												"1": "Staten Island",
+												"2": "Westerleigh",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "258",
+												"1": "Queens",
+												"2": "Woodhaven",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "265",
+												"1": "Unknown",
+												"2": "NA",
+												"3": "N/A"
+											},
+											{
+												"0": "10",
+												"1": "Queens",
+												"2": "Baisley Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "17",
+												"1": "Brooklyn",
+												"2": "Bedford",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "24",
+												"1": "Manhattan",
+												"2": "Bloomingdale",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "31",
+												"1": "Bronx",
+												"2": "Bronx Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "38",
+												"1": "Queens",
+												"2": "Cambria Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "45",
+												"1": "Manhattan",
+												"2": "Chinatown",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "52",
+												"1": "Brooklyn",
+												"2": "Cobble Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "59",
+												"1": "Bronx",
+												"2": "Crotona Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "66",
+												"1": "Brooklyn",
+												"2": "DUMBO/Vinegar Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "73",
+												"1": "Queens",
+												"2": "East Flushing",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "80",
+												"1": "Brooklyn",
+												"2": "East Williamsburg",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "87",
+												"1": "Manhattan",
+												"2": "Financial District North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "94",
+												"1": "Bronx",
+												"2": "Fordham South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "101",
+												"1": "Queens",
+												"2": "Glen Oaks",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "108",
+												"1": "Brooklyn",
+												"2": "Gravesend",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "115",
+												"1": "Staten Island",
+												"2": "Grymes Hill/Clifton",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "122",
+												"1": "Queens",
+												"2": "Hollis",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "129",
+												"1": "Queens",
+												"2": "Jackson Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "136",
+												"1": "Bronx",
+												"2": "Kingsbridge Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "143",
+												"1": "Manhattan",
+												"2": "Lincoln Square West",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "150",
+												"1": "Brooklyn",
+												"2": "Manhattan Beach",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "157",
+												"1": "Queens",
+												"2": "Maspeth",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "164",
+												"1": "Manhattan",
+												"2": "Midtown South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "171",
+												"1": "Queens",
+												"2": "Murray Hill-Queens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "178",
+												"1": "Brooklyn",
+												"2": "Ocean Parkway South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "185",
+												"1": "Bronx",
+												"2": "Pelham Parkway",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "192",
+												"1": "Queens",
+												"2": "Queensboro Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "199",
+												"1": "Bronx",
+												"2": "Rikers Island",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "206",
+												"1": "Staten Island",
+												"2": "Saint George/New Brighton",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "213",
+												"1": "Bronx",
+												"2": "Soundview/Castle Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "220",
+												"1": "Bronx",
+												"2": "Spuyten Duyvil/Kingsbridge",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "227",
+												"1": "Brooklyn",
+												"2": "Sunset Park East",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "234",
+												"1": "Manhattan",
+												"2": "Union Sq",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "241",
+												"1": "Bronx",
+												"2": "Van Cortlandt Village",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "248",
+												"1": "Bronx",
+												"2": "West Farms/Bronx River",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "255",
+												"1": "Brooklyn",
+												"2": "Williamsburg (North Side)",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "262",
+												"1": "Manhattan",
+												"2": "Yorkville East",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "9",
+												"1": "Queens",
+												"2": "Auburndale",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "16",
+												"1": "Queens",
+												"2": "Bayside",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "23",
+												"1": "Staten Island",
+												"2": "Bloomfield/Emerson Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "30",
+												"1": "Queens",
+												"2": "Broad Channel",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "37",
+												"1": "Brooklyn",
+												"2": "Bushwick South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "44",
+												"1": "Staten Island",
+												"2": "Charleston/Tottenville",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "51",
+												"1": "Bronx",
+												"2": "Co-Op City",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "58",
+												"1": "Bronx",
+												"2": "Country Club",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "65",
+												"1": "Brooklyn",
+												"2": "Downtown Brooklyn/MetroTech",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "72",
+												"1": "Brooklyn",
+												"2": "East Flatbush/Remsen Village",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "79",
+												"1": "Manhattan",
+												"2": "East Village",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "86",
+												"1": "Queens",
+												"2": "Far Rockaway",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "93",
+												"1": "Queens",
+												"2": "Flushing Meadows-Corona Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "100",
+												"1": "Manhattan",
+												"2": "Garment District",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "107",
+												"1": "Manhattan",
+												"2": "Gramercy",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "114",
+												"1": "Manhattan",
+												"2": "Greenwich Village South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "121",
+												"1": "Queens",
+												"2": "Hillcrest/Pomonok",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "128",
+												"1": "Manhattan",
+												"2": "Inwood Hill Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "135",
+												"1": "Queens",
+												"2": "Kew Gardens Hills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "142",
+												"1": "Manhattan",
+												"2": "Lincoln Square East",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "149",
+												"1": "Brooklyn",
+												"2": "Madison",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "156",
+												"1": "Staten Island",
+												"2": "Mariners Harbor",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "163",
+												"1": "Manhattan",
+												"2": "Midtown North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "170",
+												"1": "Manhattan",
+												"2": "Murray Hill",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "177",
+												"1": "Brooklyn",
+												"2": "Ocean Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "184",
+												"1": "Bronx",
+												"2": "Pelham Bay Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "191",
+												"1": "Queens",
+												"2": "Queens Village",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "198",
+												"1": "Queens",
+												"2": "Ridgewood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "205",
+												"1": "Queens",
+												"2": "Saint Albans",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "212",
+												"1": "Bronx",
+												"2": "Soundview/Bruckner",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "219",
+												"1": "Queens",
+												"2": "Springfield Gardens South",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "226",
+												"1": "Queens",
+												"2": "Sunnyside",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "233",
+												"1": "Manhattan",
+												"2": "UN/Turtle Bay South",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "240",
+												"1": "Bronx",
+												"2": "Van Cortlandt Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "247",
+												"1": "Bronx",
+												"2": "West Concourse",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "254",
+												"1": "Bronx",
+												"2": "Williamsbridge/Olinville",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "261",
+												"1": "Manhattan",
+												"2": "World Trade Center",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "2",
+												"1": "Queens",
+												"2": "Jamaica Bay",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "1",
+												"1": "EWR",
+												"2": "Newark Airport",
+												"3": "EWR"
+											},
+											{
+												"0": "7",
+												"1": "Queens",
+												"2": "Astoria",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "14",
+												"1": "Brooklyn",
+												"2": "Bay Ridge",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "21",
+												"1": "Brooklyn",
+												"2": "Bensonhurst East",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "28",
+												"1": "Queens",
+												"2": "Briarwood/Jamaica Hills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "35",
+												"1": "Brooklyn",
+												"2": "Brownsville",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "42",
+												"1": "Manhattan",
+												"2": "Central Harlem North",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "49",
+												"1": "Brooklyn",
+												"2": "Clinton Hill",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "56",
+												"1": "Queens",
+												"2": "Corona",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "63",
+												"1": "Brooklyn",
+												"2": "Cypress Hills",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "70",
+												"1": "Queens",
+												"2": "East Elmhurst",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "77",
+												"1": "Brooklyn",
+												"2": "East New York/Pennsylvania Avenue",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "84",
+												"1": "Staten Island",
+												"2": "Eltingville/Annadale/Prince's Bay",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "91",
+												"1": "Brooklyn",
+												"2": "Flatlands",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "98",
+												"1": "Queens",
+												"2": "Fresh Meadows",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "105",
+												"1": "Manhattan",
+												"2": "Governor's Island/Ellis Island/Liberty Island",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "112",
+												"1": "Brooklyn",
+												"2": "Greenpoint",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "119",
+												"1": "Bronx",
+												"2": "Highbridge",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "126",
+												"1": "Bronx",
+												"2": "Hunts Point",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "133",
+												"1": "Brooklyn",
+												"2": "Kensington",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "140",
+												"1": "Manhattan",
+												"2": "Lenox Hill East",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "147",
+												"1": "Bronx",
+												"2": "Longwood",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "154",
+												"1": "Brooklyn",
+												"2": "Marine Park/Floyd Bennett Field",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "161",
+												"1": "Manhattan",
+												"2": "Midtown Center",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "168",
+												"1": "Bronx",
+												"2": "Mott Haven/Port Morris",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "175",
+												"1": "Queens",
+												"2": "Oakland Gardens",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "182",
+												"1": "Bronx",
+												"2": "Parkchester",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "189",
+												"1": "Brooklyn",
+												"2": "Prospect Heights",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "196",
+												"1": "Queens",
+												"2": "Rego Park",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "203",
+												"1": "Queens",
+												"2": "Rosedale",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "210",
+												"1": "Brooklyn",
+												"2": "Sheepshead Bay",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "217",
+												"1": "Brooklyn",
+												"2": "South Williamsburg",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "224",
+												"1": "Manhattan",
+												"2": "Stuy Town/Peter Cooper Village",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "231",
+												"1": "Manhattan",
+												"2": "TriBeCa/Civic Center",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "238",
+												"1": "Manhattan",
+												"2": "Upper West Side North",
+												"3": "Yellow Zone"
+											},
+											{
+												"0": "245",
+												"1": "Staten Island",
+												"2": "West Brighton",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "252",
+												"1": "Queens",
+												"2": "Whitestone",
+												"3": "Boro Zone"
+											},
+											{
+												"0": "259",
+												"1": "Bronx",
+												"2": "Woodlawn/Wakefield",
+												"3": "Boro Zone"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "LocationID",
+												"type": "bigint"
+											},
+											{
+												"key": "1",
+												"name": "Borough",
+												"type": "string"
+											},
+											{
+												"key": "2",
+												"name": "Zone",
+												"type": "string"
+											},
+											{
+												"key": "3",
+												"name": "service_zone",
+												"type": "string"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"1"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_spark",
+						"display_name": "scala"
+					},
+					"language_info": {
+						"name": "scala"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/SwethaSparkPool",
+						"name": "SwethaSparkPool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SwethaSparkPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56,
+						"extraHeader": null
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "scala"
+							}
+						},
+						"source": [
+							"%%spark\n",
+							"val df = spark.read.synapsesql(\"TaxiWarehouse.dbo.TaxiZonesCopy\") \n",
+							"\n",
+							"display(df)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"// From psark to write to dedicated sql\r\n",
+							"\r\n",
+							"%%spark\r\n",
+							"// Make sure the name of the SQL pool (SQLPool01 below) matches the name of your SQL pool.\r\n",
+							"val df = spark.sqlContext.sql(\"select * from xxx\")\r\n",
+							"df.write.sqlanalytics(\"SQLPool01.wwi.TopPurchases\", Constants.INTERNAL)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Rates')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/TaxiWarehouse')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pandas read-write from blob storage')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "testSparkpool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "036e5121-0229-459e-b374-e9114c3e34dc"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/testSparkpool",
+						"name": "testSparkpool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/testSparkpool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"outputs_hidden": false
+							}
+						},
+						"source": [
+							"import pandas\r\n",
+							"\r\n",
+							"import pkg_resources\r\n",
+							"for d in pkg_resources.working_set:\r\n",
+							"     print(d)"
+						],
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# pandas read from blob storage\r\n",
+							"df = pandas.read_csv('abfss://taxisource@swethademostorageaccount.dfs.core.windows.net/GreenTaxis_201911.csv',\r\n",
+							"storage_options = {'account_key' : '4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw=='})\r\n",
+							"\r\n",
+							"# display(df)"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas\r\n",
+							"df1 = pandas.DataFrame({'VendorID': [2.0,2.0], 'RatecodeID' :[1.0,5.0]})\r\n",
+							"df1.to_csv('abfss://taxisource@swethademostorageaccount.dfs.core.windows.net/GreenTaxis1.csv',\r\n",
+							"storage_options = {'account_key' : '4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw=='})"
+						],
+						"outputs": [],
+						"execution_count": 7
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "swetha-synapse"
+		},
+		"SwethaTaxisLS_connectionString": {
+			"value": ""
+		},
+		"TaxiStorage_connectionString": {
+			"value": ""
+		},
+		"pcap_connectionString": {
+			"value": ""
+		},
+		"pcapResult_accountKey": {
+			"value": ""
+		},
+		"swetha-synapse-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"nyc_tlc_yellow_sasUri": {
+			"value": ""
+		},
+		"pcapResult_properties_typeProperties_url": {
+			"value": "https://swethataxidatalake.dfs.core.windows.net"
+		},
+		"swetha-synapse-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://swethataxidatalake.dfs.core.windows.net"
+		},
+		"us-decennial-census-zip_sasUri": {
+			"value": ""
+		}
+	}
+}
