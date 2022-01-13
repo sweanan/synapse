@@ -48,7 +48,11 @@
 						"value": "@activity('mybatch').output",
 						"type": "Expression"
 					},
-					"cases": []
+					"cases": [
+						{
+							"value": "Case1"
+						}
+					]
 				}
 			}
 		],
