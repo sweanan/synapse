@@ -1,0 +1,29 @@
+{
+	"name": "SourceDataset_m8p",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pcap",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "test.pcapng",
+				"folderPath": "yumaTestPcapfiles",
+				"container": "pcap"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			}
+		]
+	}
+}
