@@ -1,0 +1,113 @@
+{
+	"name": "pandas read-write from blob storage",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "testSparkpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "66399750-b53d-49cf-9eed-d8a151177a33"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/testSparkpool",
+				"name": "testSparkpool",
+				"type": "Spark",
+				"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/testSparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"outputs_hidden": false
+					}
+				},
+				"source": [
+					"import pandas\r\n",
+					"\r\n",
+					"import pkg_resources\r\n",
+					"for d in pkg_resources.working_set:\r\n",
+					"     print(d)"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# pandas read from blob storage\r\n",
+					"df = pandas.read_csv('abfss://taxisource@swethademostorageaccount.dfs.core.windows.net/GreenTaxis_201911.csv',\r\n",
+					"storage_options = {'account_key' : '4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw=='})\r\n",
+					"\r\n",
+					"# display(df)"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import pandas\r\n",
+					"df1 = pandas.DataFrame({'VendorID': [2.0,2.0], 'RatecodeID' :[1.0,5.0]})\r\n",
+					"df1.to_csv('abfss://taxisource@swethademostorageaccount.dfs.core.windows.net/GreenTaxis1.csv',\r\n",
+					"storage_options = {'account_key' : '4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw=='})"
+				],
+				"execution_count": 7
+			}
+		]
+	}
+}
