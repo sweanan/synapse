@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "064eff52-505f-400f-87a0-a522af6c85af"
+				"spark.autotune.trackingId": "7a639c24-86da-4f4f-a331-ce35596acdce"
 			}
 		},
 		"metadata": {
@@ -100,9 +100,13 @@
 					"                  container_name=\"pcap\",\r\n",
 					"                  blob_name=\"test.pcapng\",\r\n",
 					"                  credential=\"4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==\")\r\n",
-					""
+					"\r\n",
+					"# blob = BlobClient(account_url= 'abfss://pcap@swethademostorageaccount.dfs.core.windows.net/yumaTestPcapfiles/test.pcapng',\r\n",
+					"#                  container_name=\"pcap\",\r\n",
+					"#                  blob_name=\"test.pcapng\",\r\n",
+					"#                  credential=\"4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==\")"
 				],
-				"execution_count": 24
+				"execution_count": 48
 			},
 			{
 				"cell_type": "code",
@@ -118,11 +122,16 @@
 					}
 				},
 				"source": [
-					"data = blob.download_blob()\r\n",
+					"data = blob.download_blob().read\r\n",
+					"data.summary\r\n",
+					"# DEST_FILE = './mytest.pcapng'\r\n",
 					"\r\n",
-					"# res = subprocess.run(tshark_command, shell=True, capture_output=True, check=True)"
+					"# res = subprocess.run(tshark_command, shell=True, capture_output=True, check=True)\r\n",
+					"# with open( , \"rb\") as my_blob:\r\n",
+					"#     blob_data = blob.download_blob()\r\n",
+					"#     blob_data.readinto(my_blob)"
 				],
-				"execution_count": 28
+				"execution_count": 49
 			},
 			{
 				"cell_type": "code",
@@ -186,27 +195,6 @@
 					""
 				],
 				"execution_count": 35
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# from azure.storage.blob.blockblobservice import BlockBlobService\r\n",
-					"\r\n",
-					"# block_blob_service = BlockBlobService(account_name='abfss://pcap@swethademostorageaccount.dfs.core.windows.net/yumaTestPcapfiles/test.pcapng', \r\n",
-					"# account_key='4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw==')"
-				],
-				"execution_count": 21
 			}
 		]
 	}
