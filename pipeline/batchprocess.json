@@ -30,30 +30,6 @@
 					"referenceName": "AzureBatch1",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "Switch1",
-				"type": "Switch",
-				"dependsOn": [
-					{
-						"activity": "mybatch",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"on": {
-						"value": "@activity('mybatch').output",
-						"type": "Expression"
-					},
-					"cases": [
-						{
-							"value": "Case1"
-						}
-					]
-				}
 			}
 		],
 		"annotations": []
