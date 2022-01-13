@@ -1,0 +1,22 @@
+{
+	"name": "DestinationDataset_m8p",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pcapResult",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "yumatestPcap",
+				"fileSystem": "pcapuncompressed"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
