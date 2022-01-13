@@ -1,5 +1,5 @@
 {
-	"name": "Pipeline 1",
+	"name": "batchprocess",
 	"properties": {
 		"activities": [
 			{
@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"command": "tshark -r test.pcap -T fields, -e eth.dst -e data > thursday-100M.csv",
+					"command": "tshark -r test.pcap -T fields -E header=y -e ip.src",
 					"resourceLinkedService": {
 						"referenceName": "pcap",
 						"type": "LinkedServiceReference"
