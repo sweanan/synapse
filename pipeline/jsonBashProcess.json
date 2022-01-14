@@ -76,7 +76,7 @@
 						"type": "NotebookReference"
 					},
 					"parameters": {
-						"name": {
+						"input": {
 							"value": {
 								"value": "@string(variables('value'))",
 								"type": "Expression"
