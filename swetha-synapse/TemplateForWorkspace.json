@@ -65,6 +65,24 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('workspaceName'), '/SwethaSparkPool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/testSparkpool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Adding Notebook to Pipline')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -490,7 +508,7 @@
 								"type": "NotebookReference"
 							},
 							"parameters": {
-								"name": {
+								"input": {
 									"value": {
 										"value": "@string(variables('value'))",
 										"type": "Expression"
@@ -42464,7 +42482,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "95dd75dd-84f1-4c62-8da0-eb08ba9635ca"
+						"spark.autotune.trackingId": "212c29df-66a9-4033-bc94-ddb58cc76f91"
 					}
 				},
 				"metadata": {
@@ -42505,7 +42523,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": 1
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
