@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "70544de4-437a-4854-9e17-be78002268bb"
+				"spark.autotune.trackingId": "2ca01f30-0fef-4507-a8a0-fd9a7aca3126"
 			}
 		},
 		"metadata": {
@@ -76,46 +76,13 @@
 				},
 				"source": [
 					"print(\"welcome\")\r\n",
-					"print(input)"
+					"print(input)\r\n",
+					"\r\n",
+					"# You input will be the json file created as part of out from the previous pipline activity\r\n",
+					"# you can play around with this Data now to upload it to the Datalake\r\n",
+					""
 				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"import pandas"
-				],
-				"execution_count": 3
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# df = pandas.read_json(input)\r\n",
-					"# display(df)"
-				],
-				"execution_count": null
+				"execution_count": 4
 			}
 		]
 	}
