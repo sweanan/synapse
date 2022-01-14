@@ -30,8 +30,56 @@
 					"referenceName": "AzureBatch1",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Append variable1",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "bashProcess",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "outputcsv",
+					"value": {
+						"value": "@json(concat('{\"activityName\":\"Copy1\",\"activityObject\":',activity('bashProcess').output,'}'))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Append variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "jsonArray",
+					"value": {
+						"value": "@variables('outputcsv')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"outputcsv": {
+				"type": "Array"
+			},
+			"jsonArray": {
+				"type": "Array"
+			}
+		},
 		"annotations": []
 	}
 }
