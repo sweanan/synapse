@@ -40451,6 +40451,109 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/jsonPcaptesting')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SwethaSparkPool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "ef0074d3-9d8d-45df-8cf6-c214f6baea29"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/SwethaSparkPool",
+						"name": "SwethaSparkPool",
+						"type": "Spark",
+						"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SwethaSparkPool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 8,
+						"memory": 56,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"import pandas\r\n",
+							"df = pandas.read_json('abfss://taxisource@swethademostorageaccount.dfs.core.windows.net/notebookjsonLogs.json',\r\n",
+							"storage_options = {'account_key' : '4mDMVa29BJRrAsvlsmHX8tDIBYVUg7/y5nlwpPUIW5RAdm0leRWfmuNKjkgLjLEiQeB89dh7/L4cmzdUnrN8Kw=='})\r\n",
+							"\r\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# %%pyspark\r\n",
+							"# blob_account_name = \"swethademostorageaccount\"\r\n",
+							"# blob_container_name = \"pcap\"\r\n",
+							"# from pyspark.sql import SparkSession\r\n",
+							"\r\n",
+							"# sc = SparkSession.builder.getOrCreate()\r\n",
+							"# token_library = sc._jvm.com.microsoft.azure.synapse.tokenlibrary.TokenLibrary\r\n",
+							"# blob_sas_token = token_library.getConnectionString(\"pcap\")\r\n",
+							"\r\n",
+							"# spark.conf.set(\r\n",
+							"#     'fs.azure.sas.%s.%s.blob.core.windows.net' % (blob_container_name, blob_account_name),\r\n",
+							"#     blob_sas_token)\r\n",
+							"# df = spark.read.load('wasbs://pcap@swethademostorageaccount.blob.core.windows.net/yumaTestPcapfiles/notebookjsonLogs.json', format='json')\r\n",
+							"# df.write.mode(\"overwrite\").saveAsTable(\"fhvwarehouse.PcapTablle\")"
+						],
+						"outputs": [],
+						"execution_count": 4
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/open pcap file')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -42482,7 +42585,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "40335c80-850c-4260-9278-08212af1f294"
+						"spark.autotune.trackingId": "70544de4-437a-4854-9e17-be78002268bb"
 					}
 				},
 				"metadata": {
@@ -42507,10 +42610,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 28
+					}
 				},
 				"cells": [
 					{
