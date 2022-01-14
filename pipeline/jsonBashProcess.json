@@ -75,6 +75,15 @@
 						"referenceName": "updateToDb",
 						"type": "NotebookReference"
 					},
+					"parameters": {
+						"name": {
+							"value": {
+								"value": "@string(variables('value'))",
+								"type": "Expression"
+							},
+							"type": "string"
+						}
+					},
 					"snapshot": true
 				}
 			}
