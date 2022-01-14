@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "07e57a38-2b14-48bb-b067-cffc6f8bc253"
+				"spark.autotune.trackingId": "ce78df78-0163-4b8c-ba17-3c75702c2001"
 			}
 		},
 		"metadata": {
@@ -112,7 +112,7 @@
 					}
 				},
 				"source": [
-					"df = pd.read_json(input)\r\n",
+					"df = pandas.read_json(input)\r\n",
 					"display(df)"
 				],
 				"execution_count": null
