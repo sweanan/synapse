@@ -1,8 +1,12 @@
 {
-	"name": "Notebook 1",
+	"name": "updateToDb",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "testSparkpool",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -13,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "628a49af-532c-4af2-960b-2594880108b5"
+				"spark.autotune.trackingId": "0c0a503d-8f5d-455c-b6d3-b53363baf9c1"
 			}
 		},
 		"metadata": {
@@ -21,20 +25,61 @@
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
-				"display_name": "python"
+				"display_name": "Synapse PySpark"
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/047a4628-7ce2-4a47-b261-6ca35c95a0c1/resourceGroups/DemoStorageAccount/providers/Microsoft.Synapse/workspaces/swetha-synapse/bigDataPools/testSparkpool",
+				"name": "testSparkpool",
+				"type": "Spark",
+				"endpoint": "https://swetha-synapse.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/testSparkpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
 				"cell_type": "code",
+				"metadata": {
+					"tags": [
+						"parameters"
+					]
+				},
 				"source": [
+					"name = \"welcome\"\r\n",
+					"\r\n",
+					"\r\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print(name)"
+				],
+				"execution_count": 8
 			}
 		]
 	}
