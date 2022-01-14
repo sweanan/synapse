@@ -1,5 +1,5 @@
 {
-	"name": "batchprocess",
+	"name": "emptyBatchProcess",
 	"properties": {
 		"activities": [
 			{

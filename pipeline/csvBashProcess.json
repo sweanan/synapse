@@ -1,5 +1,5 @@
 {
-	"name": "bashProcess",
+	"name": "csvBashProcess",
 	"properties": {
 		"activities": [
 			{
