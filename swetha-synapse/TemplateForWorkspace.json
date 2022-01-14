@@ -42482,7 +42482,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "db0daf52-4f02-4302-a26b-f4f8f0a5a0c4"
+						"spark.autotune.trackingId": "64b73789-7a86-4cec-910c-74ef5441a428"
 					}
 				},
 				"metadata": {
@@ -42580,7 +42580,7 @@
 							}
 						},
 						"source": [
-							"df = pd.read_json(input)\r\n",
+							"df = pandas.read_json(input)\r\n",
 							"display(df)"
 						],
 						"outputs": [],
