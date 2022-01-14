@@ -5,6 +5,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "GreenTaxiCsvDataset",
+						"type": "DatasetReference"
+					},
 					"name": "GreenTaxis"
 				}
 			],
@@ -25,7 +29,7 @@
 					"name": "DerivedColumn1"
 				}
 			],
-			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> GreenTaxis\nGreenTaxis select(mapColumn(\n\t\tVendorID,\n\t\tPickUpTime = lpep_pickup_datetime,\n\t\tDropOffTime = lpep_dropoff_datetime,\n\t\tstore_and_fwd_flag,\n\t\tRatecodeID,\n\t\tPickUpLocationID = PULocationID,\n\t\tDropOffLocationID = DOLocationID,\n\t\tPassengerCount = passenger_count,\n\t\tTripDistance = trip_distance,\n\t\tfare_amount,\n\t\textra,\n\t\tmta_tax,\n\t\ttip_amount,\n\t\ttolls_amount,\n\t\tehail_fee,\n\t\timprovement_surcharge,\n\t\ttotal_amount,\n\t\tpayment_type,\n\t\ttrip_type,\n\t\tcongestion_surcharge\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenamedColumns\nRenamedColumns derive(TripYear = year(PickUpTime)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string,\n\t\tColumn_9 as string,\n\t\tColumn_10 as string,\n\t\tColumn_11 as string,\n\t\tColumn_12 as string,\n\t\tColumn_13 as string,\n\t\tColumn_14 as string,\n\t\tColumn_15 as string,\n\t\tColumn_16 as string,\n\t\tColumn_17 as string,\n\t\tColumn_18 as string,\n\t\tColumn_19 as string,\n\t\tColumn_20 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> GreenTaxis\nGreenTaxis select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenamedColumns\nRenamedColumns derive(name = Column_1) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
