@@ -42482,7 +42482,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "212c29df-66a9-4033-bc94-ddb58cc76f91"
+						"spark.autotune.trackingId": "db0daf52-4f02-4302-a26b-f4f8f0a5a0c4"
 					}
 				},
 				"metadata": {
@@ -42507,8 +42507,10 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
-					}
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
@@ -42540,7 +42542,46 @@
 						},
 						"source": [
 							"print(\"welcome\")\r\n",
-							"print(input)"
+							"# print(input)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas"
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df = pd.read_json(input)\r\n",
+							"display(df)"
 						],
 						"outputs": [],
 						"execution_count": null
