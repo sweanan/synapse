@@ -65,24 +65,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/SwethaSparkPool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/testSparkpool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Adding Notebook to Pipline')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -506,6 +488,15 @@
 							"notebook": {
 								"referenceName": "updateToDb",
 								"type": "NotebookReference"
+							},
+							"parameters": {
+								"name": {
+									"value": {
+										"value": "@string(variables('value'))",
+										"type": "Expression"
+									},
+									"type": "string"
+								}
 							},
 							"snapshot": true
 						}
@@ -1175,7 +1166,7 @@
 							"name": "DerivedColumn1"
 						}
 					],
-					"script": "source(output(\n\t\tVendorID as short,\n\t\tlpep_pickup_datetime as timestamp,\n\t\tlpep_dropoff_datetime as timestamp,\n\t\tstore_and_fwd_flag as boolean,\n\t\tRatecodeID as short,\n\t\tPULocationID as short,\n\t\tDOLocationID as short,\n\t\tpassenger_count as short,\n\t\ttrip_distance as double,\n\t\tfare_amount as double,\n\t\textra as double,\n\t\tmta_tax as double,\n\t\ttip_amount as double,\n\t\ttolls_amount as double,\n\t\tehail_fee as string,\n\t\timprovement_surcharge as double,\n\t\ttotal_amount as double,\n\t\tpayment_type as short,\n\t\ttrip_type as short,\n\t\tcongestion_surcharge as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> GreenTaxis\nGreenTaxis select(mapColumn(\n\t\tVendorID,\n\t\tPickUpTime = lpep_pickup_datetime,\n\t\tDropOffTime = lpep_dropoff_datetime,\n\t\tstore_and_fwd_flag,\n\t\tRatecodeID,\n\t\tPickUpLocationID = PULocationID,\n\t\tDropOffLocationID = DOLocationID,\n\t\tPassengerCount = passenger_count,\n\t\tTripDistance = trip_distance,\n\t\tfare_amount,\n\t\textra,\n\t\tmta_tax,\n\t\ttip_amount,\n\t\ttolls_amount,\n\t\tehail_fee,\n\t\timprovement_surcharge,\n\t\ttotal_amount,\n\t\tpayment_type,\n\t\ttrip_type,\n\t\tcongestion_surcharge\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenamedColumns\nRenamedColumns derive(TripYear = year(PickUpTime)) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+					"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string,\n\t\tColumn_9 as string,\n\t\tColumn_10 as string,\n\t\tColumn_11 as string,\n\t\tColumn_12 as string,\n\t\tColumn_13 as string,\n\t\tColumn_14 as string,\n\t\tColumn_15 as string,\n\t\tColumn_16 as string,\n\t\tColumn_17 as string,\n\t\tColumn_18 as string,\n\t\tColumn_19 as string,\n\t\tColumn_20 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> GreenTaxis\nGreenTaxis select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenamedColumns\nRenamedColumns derive(name = Column_1) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 				}
 			},
 			"dependsOn": [
@@ -42473,7 +42464,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "bfed625e-5ddf-4e06-ae13-24632bc1318b"
+						"spark.autotune.trackingId": "95dd75dd-84f1-4c62-8da0-eb08ba9635ca"
 					}
 				},
 				"metadata": {
@@ -42498,10 +42489,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
-					},
-					"sessionKeepAliveTimeout": 30
+						"memory": 28
+					}
 				},
 				"cells": [
 					{
@@ -42512,7 +42501,7 @@
 							]
 						},
 						"source": [
-							"name = \"welcome\"\r\n",
+							"input = \"welcome\"\r\n",
 							""
 						],
 						"outputs": [],
@@ -42532,7 +42521,8 @@
 							}
 						},
 						"source": [
-							"print(name)"
+							"print(\"welcome\")\r\n",
+							"print(input)"
 						],
 						"outputs": [],
 						"execution_count": null
