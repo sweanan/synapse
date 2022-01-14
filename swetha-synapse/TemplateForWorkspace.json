@@ -42482,7 +42482,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "64b73789-7a86-4cec-910c-74ef5441a428"
+						"spark.autotune.trackingId": "40335c80-850c-4260-9278-08212af1f294"
 					}
 				},
 				"metadata": {
@@ -42521,7 +42521,7 @@
 							]
 						},
 						"source": [
-							"input = \"welcome\"\r\n",
+							"input = \"welcome to Notebook\"\r\n",
 							""
 						],
 						"outputs": [],
@@ -42542,7 +42542,7 @@
 						},
 						"source": [
 							"print(\"welcome\")\r\n",
-							"# print(input)"
+							"print(input)"
 						],
 						"outputs": [],
 						"execution_count": null
@@ -42580,8 +42580,8 @@
 							}
 						},
 						"source": [
-							"df = pandas.read_json(input)\r\n",
-							"display(df)"
+							"# df = pandas.read_json(input)\r\n",
+							"# display(df)"
 						],
 						"outputs": [],
 						"execution_count": null
