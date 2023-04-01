@@ -8,6 +8,9 @@
 		"AzureBatch1_accessKey": {
 			"value": ""
 		},
+		"AzureSqlLinkedService_connectionString": {
+			"value": ""
+		},
 		"SwethaTaxisLS_connectionString": {
 			"value": ""
 		},
@@ -21,7 +24,7 @@
 			"value": ""
 		},
 		"swetha-synapse-WorkspaceDefaultSqlServer_connectionString": {
-			"value": ""
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:swetha-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"AzureBatch1_properties_typeProperties_batchUri": {
 			"value": "https://azurebatch.eastus.batch.azure.com"

@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessKey' of 'AzureBatch1'"
 		},
+		"AzureSqlLinkedService_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlLinkedService'"
+		},
 		"SwethaTaxisLS_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SwethaTaxisLS'"
@@ -29,7 +33,8 @@
 		},
 		"swetha-synapse-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'swetha-synapse-WorkspaceDefaultSqlServer'"
+			"metadata": "Secure string for 'connectionString' of 'swetha-synapse-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:swetha-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"AzureBatch1_properties_typeProperties_batchUri": {
 			"type": "string",
@@ -65,24 +70,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('workspaceName'), '/SwethaSparkPool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/testSparkpool')]",
-			"type": "Microsoft.Synapse/workspaces/bigDataPools",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('workspaceName'), '/Adding Notebook to Pipline')]",
 			"type": "Microsoft.Synapse/workspaces/pipelines",
 			"apiVersion": "2019-06-01-preview",
@@ -114,7 +101,13 @@
 									"type": "string"
 								}
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -516,7 +509,13 @@
 									"type": "string"
 								}
 							},
-							"snapshot": true
+							"snapshot": true,
+							"conf": {
+								"spark.dynamicAllocation.enabled": null,
+								"spark.dynamicAllocation.minExecutors": null,
+								"spark.dynamicAllocation.maxExecutors": null
+							},
+							"numExecutors": null
 						}
 					}
 				],
@@ -981,6 +980,25 @@
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('workspaceId'), '/linkedServices/pcap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureSqlLinkedService')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlLinkedService_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -40289,7 +40307,8 @@
 						"nodeCount": 10,
 						"cores": 4,
 						"memory": 28
-					}
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
@@ -40471,7 +40490,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e6d6641e-385e-4593-862a-1d3fb8b66441"
+						"spark.autotune.trackingId": "abb99932-de7c-42ef-a7c0-600c62c3c732"
 					}
 				},
 				"metadata": {
@@ -40496,8 +40515,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 3,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -40752,7 +40770,8 @@
 						"nodeCount": 10,
 						"cores": 4,
 						"memory": 28
-					}
+					},
+					"sessionKeepAliveTimeout": 30
 				},
 				"cells": [
 					{
@@ -42585,7 +42604,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "1",
 						"spark.dynamicAllocation.maxExecutors": "1",
-						"spark.autotune.trackingId": "81324825-fc0b-4ce4-b1cf-89f3923ce238"
+						"spark.autotune.trackingId": "2ca01f30-0fef-4507-a8a0-fd9a7aca3126"
 					}
 				},
 				"metadata": {
@@ -42610,8 +42629,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"automaticScaleJobs": false
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -42659,6 +42677,73 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/SwethaSparkPool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 20
+				},
+				"autoScale": {
+					"enabled": false,
+					"maxNodeCount": 5,
+					"minNodeCount": 3
+				},
+				"nodeCount": 3,
+				"nodeSize": "Medium",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/testSparkpool')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 3,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"libraryRequirements": {
+					"content": "pip\r\npandas==1.3.3\r\npy\r\ndpkt",
+					"filename": "requirements.txt",
+					"time": "2022-01-13T17:50:21.0891119Z"
+				},
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/IntegrationTestserver')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Rates')]",
 			"type": "Microsoft.Synapse/workspaces/sqlPools",
 			"apiVersion": "2019-06-01-preview",
@@ -42681,6 +42766,101 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/CopyData')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RateCodesSqlDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "RatesCodeParquetDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/RateCodesSqlDataset')]",
+				"[concat(variables('workspaceId'), '/datasets/RatesCodeParquetDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/RatesCodeParquetDataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "swetha-synapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "RatesCodes.parquet",
+						"fileSystem": "taxidata"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/swetha-synapse-WorkspaceDefaultStorage')]"
+			]
 		}
 	]
 }
